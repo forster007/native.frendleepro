@@ -23,7 +23,6 @@ export const BlockFooter = styled.View`
   margin-top: 10px;
   width: 100%;
 `;
-
 export const BlockHeader = styled.View`
   align-items: center;
   justify-content: center;
@@ -39,7 +38,7 @@ export const BodyRow = styled.View`
 
 export const BodyText = styled.Text`
   color: ${({ color }) => color || '#585175'};
-  font-size: 16px;
+  font-size: ${({ size }) => size || '16px'};
   font-weight: ${({ weight }) => weight || 'normal'};
   text-decoration-line: ${({ decoration }) => decoration || 'none'};
 `;
@@ -171,6 +170,7 @@ export const Content = styled.ScrollView.attrs({
 
 export const Div = styled.View`
   align-items: ${({ align }) => align || 'stretch'};
+  background-color: ${({ background }) => background || 'transparent'};
   justify-content: ${({ justify }) => justify || 'flex-start'};
   flex-direction: ${({ direction }) => direction || 'column'};
   margin-bottom: ${({ marginBottom }) => (marginBottom ? '15px' : '0px')};
@@ -180,7 +180,7 @@ export const Div = styled.View`
 export const Divisor = styled.View`
   background-color: #86bbd8;
   height: 1px;
-  margin: 30px 0 20px;
+  margin: ${({ marginTop }) => marginTop || '30px'} 0 20px;
   padding: 0 20px;
   width: 100%;
 `;
@@ -221,7 +221,7 @@ export const Gender = styled(RectButton)`
   background-color: ${({ genderSelected }) =>
     genderSelected ? '#1ec5ea' : '#fff'};
   border: 2px solid
-    ${({ genderSelected }) => (genderSelected ? '#302d46' : '#1ec5ea')};
+    ${({ genderSelected }) => (genderSelected ? '#497697' : '#1ec5ea')};
   border-radius: 4px;
   height: 120px;
   justify-content: center;
@@ -338,6 +338,11 @@ export const InputTitle = styled.Text`
   margin: 0 0 10px;
 `;
 
+export const Slider = styled.Slider`
+  left: ${Platform.OS === 'android' ? '-10px' : '0px'};
+  width: ${Platform.OS === 'android' ? '80%' : '70%'};
+`;
+
 export const StepNumber = styled.Text`
   color: ${({ selected }) => (selected ? '#e0e0e0' : '#302d46')};
   font-size: ${({ selected }) => (selected ? '54px' : '32px')};
@@ -352,11 +357,11 @@ export const StepText = styled.Text`
 
 export const TermsCheckBox = styled(CheckBox).attrs(() => ({
   checkedColor: '#302d46',
-  checkedIcon: 'square',
+  checkedIcon: 'check-square-o',
   containerStyle: {
     marginLeft: 0,
     padding: 0,
     paddingLeft: 0,
   },
-  size: 34,
+  size: 25,
 }))``;

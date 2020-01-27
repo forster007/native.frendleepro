@@ -42,13 +42,16 @@ import {
 import api from '~/services/api';
 
 export default function SignUpStep1({ navigation }) {
+  const { showActionSheetWithOptions } = useActionSheet();
+
   const lastnameInputRef = useRef();
   const emailInputRef = useRef();
   const phoneInputRef = useRef();
 
-  const { showActionSheetWithOptions } = useActionSheet();
   const [account_type] = useState('provider');
-  const [avatar, setAvatar] = useState('');
+  const [pictureAddress, setPictureAddress] = useState('');
+  const [pictureLicense, setPictureLicense] = useState('');
+  const [pictureProfile, setPictureProfile] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [bsn, setBsn] = useState('');
   const [buttonState, setButtonState] = useState(false);
@@ -71,16 +74,28 @@ export default function SignUpStep1({ navigation }) {
   const [validEmail, setValidEmail] = useState(false);
   const [validPhone, setValidPhone] = useState(false);
 
-  const selectAvatar = async result => {
+  const selectImage = async (option, result) => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
       compress: 0.5,
       format: ImageManipulator.SaveFormat.JPEG,
     });
 
-    setAvatar(image.uri);
+    switch (option) {
+      case 'pictureAddress':
+        setPictureAddress(image.uri);
+        break;
+      case 'pictureLicense':
+        setPictureLicense(image.uri);
+        break;
+      case 'pictureProfile':
+        setPictureProfile(image.uri);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleSelectAvatar = useCallback(() => {
+  const handleSelectAvatar = useCallback(option => {
     const options = ['Tirar foto', 'Buscar da galeria', 'Cancelar'];
     const cancelButtonIndex = 2;
 
@@ -120,7 +135,7 @@ export default function SignUpStep1({ navigation }) {
               break;
             }
 
-            selectAvatar(result);
+            selectImage(option, result);
 
             break;
           case 1:
@@ -149,7 +164,7 @@ export default function SignUpStep1({ navigation }) {
               break;
             }
 
-            selectAvatar(result);
+            selectImage(option, result);
 
             break;
           default:
@@ -160,7 +175,9 @@ export default function SignUpStep1({ navigation }) {
   }, []);
 
   function handleNext() {
-    const filename = avatar.split('/').pop();
+    const filenamePictureAddress = pictureAddress.split('/').pop();
+    const filenamePictureLicense = pictureLicense.split('/').pop();
+    const filenamePictureProfile = pictureProfile.split('/').pop();
 
     const data = {
       birthdate: `${birthdate}T00:00:00-03:00`,
@@ -171,9 +188,19 @@ export default function SignUpStep1({ navigation }) {
       phone_number_is_whatsapp: true,
       ssn: bsn,
       user: { account_type, email },
+      picture_address: {
+        uri: pictureAddress,
+        name: filenamePictureAddress,
+        type: 'image/jpg',
+      },
+      picture_license: {
+        uri: pictureLicense,
+        name: filenamePictureLicense,
+        type: 'image/jpg',
+      },
       picture_profile: {
-        uri: avatar,
-        name: filename,
+        uri: pictureProfile,
+        name: filenamePictureProfile,
         type: 'image/jpg',
       },
       address: {
@@ -229,7 +256,9 @@ export default function SignUpStep1({ navigation }) {
 
   useEffect(() => {
     if (
-      avatar &&
+      pictureAddress &&
+      pictureLicense &&
+      pictureProfile &&
       birthdate &&
       gender &&
       email &&
@@ -251,7 +280,9 @@ export default function SignUpStep1({ navigation }) {
       setButtonState(false);
     }
   }, [
-    avatar,
+    pictureAddress,
+    pictureLicense,
+    pictureProfile,
     birthdate,
     gender,
     email,
@@ -311,7 +342,7 @@ export default function SignUpStep1({ navigation }) {
             />
             <ButtonInput>
               <InputIcon
-                color={validBsn ? '#7244d4' : '#e0e0e0'}
+                color={validBsn ? '#1ec5ea' : '#e0e0e0'}
                 icon="check-circle-o"
                 size={30}
               />
@@ -321,8 +352,10 @@ export default function SignUpStep1({ navigation }) {
             <InputTitle>Selfie with document</InputTitle>
             <Div direction="row" justify="space-between">
               <Div width="20%">
-                <TouchableWithoutFeedback onPress={handleSelectAvatar}>
-                  <FrendleeProfilePicture source={{ uri: avatar }} />
+                <TouchableWithoutFeedback
+                  onPress={() => handleSelectAvatar('pictureLicense')}
+                >
+                  <FrendleeProfilePicture source={{ uri: pictureLicense }} />
                 </TouchableWithoutFeedback>
               </Div>
 
@@ -342,8 +375,10 @@ export default function SignUpStep1({ navigation }) {
             <InputTitle>Profile selfie</InputTitle>
             <Div direction="row" justify="space-between">
               <Div width="20%">
-                <TouchableWithoutFeedback onPress={handleSelectAvatar}>
-                  <FrendleeProfilePicture source={{ uri: avatar }} />
+                <TouchableWithoutFeedback
+                  onPress={() => handleSelectAvatar('pictureProfile')}
+                >
+                  <FrendleeProfilePicture source={{ uri: pictureProfile }} />
                 </TouchableWithoutFeedback>
               </Div>
 
@@ -397,7 +432,7 @@ export default function SignUpStep1({ navigation }) {
               />
               <ButtonInput>
                 <InputIcon
-                  color={validEmail ? '#7244d4' : '#e0e0e0'}
+                  color={validEmail ? '#1ec5ea' : '#e0e0e0'}
                   icon="check-circle-o"
                   size={30}
                 />
@@ -418,7 +453,7 @@ export default function SignUpStep1({ navigation }) {
                 />
                 <ButtonInput>
                   <InputIcon
-                    color={validPhone ? '#7244d4' : '#e0e0e0'}
+                    color={validPhone ? '#1ec5ea' : '#e0e0e0'}
                     icon="check-circle-o"
                     size={30}
                   />
@@ -519,8 +554,10 @@ export default function SignUpStep1({ navigation }) {
             <InputTitle>Address comprovement</InputTitle>
             <Div direction="row" justify="space-between">
               <Div width="20%">
-                <TouchableWithoutFeedback onPress={handleSelectAvatar}>
-                  <FrendleeProfilePicture source={{ uri: avatar }} />
+                <TouchableWithoutFeedback
+                  onPress={() => handleSelectAvatar('pictureAddress')}
+                >
+                  <FrendleeProfilePicture source={{ uri: pictureAddress }} />
                 </TouchableWithoutFeedback>
               </Div>
 
