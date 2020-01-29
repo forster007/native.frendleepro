@@ -1,15 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BlockBody,
   BlockFooter,
   BlockHeader,
-  BodyTitle,
-  Button,
-  ButtonContainer,
-  ButtonText,
-  ButtonGroup,
-  ButtonGroupOption,
-  ButtonGroupText,
+  BodyText,
+  ButtonInput,
   ButtonNext,
   ButtonNextText,
   Container,
@@ -19,103 +14,125 @@ import {
   FooterStep,
   HeaderLogo,
   HeaderSubTitle,
+  HeaderTitle,
+  Input,
+  InputIcon,
   InputTitle,
   StepNumber,
   StepText,
+  TermsCheckBox,
 } from './styles';
 
-export default function SignUpStep3({ navigation }) {
-  const [pressure, setPressure] = useState('normal');
+import api from '~/services/api';
 
-  const [optionA, setOptionA] = useState(false);
-  const [optionB, setOptionB] = useState(false);
-  const [optionC, setOptionC] = useState(false);
+export default function SignUpStep2({ navigation }) {
+  const [buttonState, setButtonState] = useState(false);
+  const [user, setUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [validPassword, setValidPassword] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [checked, setChecked] = useState(false);
 
-  function handleNext() {
+  useEffect(() => {
+    const data = navigation.getParam('data');
+    setUser(data ? data.email : '');
+  }, []);
+
+  useEffect(() => {
+    if (user && password && validPassword && checked) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [user, password, validPassword, checked]);
+
+  useEffect(() => {
+    const regex = new RegExp(
+      '^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})'
+    );
+    setValidPassword(regex.test(password));
+  }, [password, validPassword]);
+
+  const handleNext = () => {
     const data = navigation.getParam('data');
 
-    data.blood_pressure = pressure;
-    data.have_allergy = optionB;
-    data.have_diseases = optionA;
-    data.have_treatment = optionC;
+    data.password = password;
 
-    navigation.navigate('SignUpStep4', { data });
-  }
+    console.log(data);
+  };
 
   return (
     <Container>
       <Content>
         <BlockHeader>
           <HeaderLogo />
-          <HeaderSubTitle>
-            We need to know a little more about you. Please fill in some
-            information about your health.
-          </HeaderSubTitle>
+          <HeaderTitle>CREATE ACCOUNT</HeaderTitle>
         </BlockHeader>
 
         <BlockBody>
-          <Divisor />
+          <Div direction="row" justify="space-between">
+            <BodyText weight="bold">Access data</BodyText>
+            <BodyText>
+              Step <BodyText weight="bold">3</BodyText> of{' '}
+              <BodyText weight="bold">3</BodyText>
+            </BodyText>
+          </Div>
+          <HeaderSubTitle>
+            Art party bitters twee humblebrag polaroid typewriter cold-pressed
+            hammock direct trade photo booth shaman.
+          </HeaderSubTitle>
+          <Divisor marginTop="15px" />
 
-          <BodyTitle>Medical information</BodyTitle>
-          <Div marginBottom>
-            <InputTitle>Blood pressure</InputTitle>
-            <ButtonGroup>
-              <ButtonGroupOption
-                onPress={() => setPressure('low')}
-                selected={pressure === 'low'}
-              >
-                <ButtonGroupText selected={pressure === 'low'}>
-                  Low
-                </ButtonGroupText>
-              </ButtonGroupOption>
-              <ButtonGroupOption
-                onPress={() => setPressure('normal')}
-                selected={pressure === 'normal'}
-              >
-                <ButtonGroupText selected={pressure === 'normal'}>
-                  Normal
-                </ButtonGroupText>
-              </ButtonGroupOption>
-              <ButtonGroupOption
-                onPress={() => setPressure('high')}
-                selected={pressure === 'high'}
-              >
-                <ButtonGroupText selected={pressure === 'high'}>
-                  High
-                </ButtonGroupText>
-              </ButtonGroupOption>
-            </ButtonGroup>
+          <Div direction="column" justify="flex-start" marginBottom>
+            <InputTitle>User</InputTitle>
+            <Input editable={false} value={user} />
           </Div>
 
-          <Div>
-            <InputTitle>Restrições Médicas</InputTitle>
-            <ButtonContainer>
-              <Button onPress={() => setOptionA(!optionA)} selected={optionA}>
-                <ButtonText selected={optionA}>
-                  I have chronic illnesses or conditions
-                </ButtonText>
-              </Button>
-            </ButtonContainer>
-            <ButtonContainer>
-              <Button onPress={() => setOptionB(!optionB)} selected={optionB}>
-                <ButtonText selected={optionB}>
-                  I have allergies or restrictions
-                </ButtonText>
-              </Button>
-            </ButtonContainer>
-            <ButtonContainer>
-              <Button onPress={() => setOptionC(!optionC)} selected={optionC}>
-                <ButtonText selected={optionC}>
-                  I am in medical treatment
-                </ButtonText>
-              </Button>
-            </ButtonContainer>
+          <Div direction="column" justify="flex-start">
+            <InputTitle>Choose your password</InputTitle>
+            <Div align="center" direction="row" marginBottom>
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={setPassword}
+                secureTextEntry={!passwordVisible}
+                value={password}
+              />
+              <ButtonInput onPress={() => setPasswordVisible(!passwordVisible)}>
+                <InputIcon visible={passwordVisible} />
+              </ButtonInput>
+            </Div>
+            <BodyText>
+              Minimum of 8 characters. Use letters and numbers.
+            </BodyText>
           </Div>
 
-          <Divisor />
+          <Divisor marginTop="15px" />
 
-          <Div>
-            <ButtonNext state onPress={handleNext}>
+          <Div marginBotton>
+            <Div direction="row" marginBottom>
+              <Div width="8%">
+                <TermsCheckBox
+                  checked={checked}
+                  onPress={() => setChecked(!checked)}
+                />
+              </Div>
+              <Div justify="center" width="88%">
+                <BodyText>
+                  To proceed, you need to agree with our{' '}
+                  <BodyText
+                    color="#1ec5ea"
+                    decoration="underline"
+                    weight="bold"
+                  >
+                    Terms of use
+                  </BodyText>
+                  .
+                </BodyText>
+              </Div>
+            </Div>
+
+            <ButtonNext state={buttonState} onPress={handleNext}>
               <ButtonNextText>NEXT STEP</ButtonNextText>
             </ButtonNext>
           </Div>
@@ -130,10 +147,7 @@ export default function SignUpStep3({ navigation }) {
           </FooterStep>
           <FooterStep selected>
             <StepNumber selected>3</StepNumber>
-            <StepText>Health</StepText>
-          </FooterStep>
-          <FooterStep>
-            <StepNumber>4</StepNumber>
+            <StepText>Access</StepText>
           </FooterStep>
         </BlockFooter>
       </Content>

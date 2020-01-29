@@ -20,7 +20,7 @@ export const BlockFooter = styled.View`
   flex-direction: row;
   height: ${Platform.OS === 'ios' && height >= 812 ? '150px' : '130px'};
   justify-content: space-between;
-  margin-top: 10px;
+  padding-top: 0px;
   width: 100%;
 `;
 export const BlockHeader = styled.View`

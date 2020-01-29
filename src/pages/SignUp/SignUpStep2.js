@@ -34,29 +34,31 @@ import api from '~/services/api';
 
 export default function SignUpStep2({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
+  const [clocks, setClocks] = useState([]);
+  const [periods, setPeriods] = useState([]);
   const [services, setServices] = useState([]);
+  const [stuffs, setStuffs] = useState([]);
 
+  const [pictureCertification, setPictureCertification] = useState('');
+  const [ocupation, setOcupation] = useState('');
   const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [clocksCheckeds, setClocksCheckeds] = useState([]);
+  const [periodsCheckeds, setPeriodsCheckeds] = useState([]);
   const [servicesCheckeds, setServicesCheckeds] = useState([]);
-  const [pictureCertification, setPictureCertification] = useState('');
-  const [street, setStreet] = useState('');
-  const [number, setNumber] = useState('');
-  const [complement, setComplement] = useState('');
-  const [district, setDistrict] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
+  const [stuffsCheckeds, setStuffsCheckeds] = useState([]);
 
   useEffect(() => {
     async function getServices() {
-      const { data } = await api.get('/services');
-      const obj = {};
-      data.forEach(service => {
-        obj[`service-${service.id}`] = false;
-      });
+      const { data: a } = await api.get('/clocks');
+      const { data: b } = await api.get('/periods');
+      const { data: c } = await api.get('/services');
+      const { data: d } = await api.get('/stuffs');
 
-      setServices(data);
+      setClocks(a);
+      setPeriods(b);
+      setServices(c);
+      setStuffs(d);
     }
 
     getServices();
@@ -157,16 +159,73 @@ export default function SignUpStep2({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if (street && number && district && city && state && country) {
+    if (
+      clocksCheckeds.length >= 1 &&
+      periodsCheckeds.length >= 1 &&
+      servicesCheckeds.length >= 1 &&
+      stuffsCheckeds.length >= 1
+    ) {
       setButtonState(true);
     } else {
       setButtonState(false);
     }
-  }, [street, number, complement, district, city, state, country]);
+  }, [clocksCheckeds, periodsCheckeds, servicesCheckeds, stuffsCheckeds]);
 
   const handleNext = () => {
     const data = navigation.getParam('data');
+
+    if (pictureCertification) {
+      const filenamePictureCertification = pictureCertification
+        .split('/')
+        .pop();
+      data.picture_certification = {
+        uri: pictureCertification,
+        name: filenamePictureCertification,
+        type: 'image/jpg',
+      };
+    }
+
+    data.formation = ocupation;
+    data.is_medical_provider = checked;
+    data.provider_clocks = clocksCheckeds;
+    data.provider_periods = periodsCheckeds;
+    data.provider_services = servicesCheckeds;
+
     navigation.navigate('SignUpStep3', { data });
+  };
+
+  const checkClock = clock_id => {
+    const ids = clocksCheckeds;
+
+    const exists = ids.find(e => {
+      return e === clock_id;
+    });
+
+    if (!exists) {
+      ids.push(clock_id);
+    } else {
+      const index = ids.findIndex(e => e === clock_id);
+      ids.splice(index, 1);
+    }
+
+    setClocksCheckeds([...ids]);
+  };
+
+  const checkPeriod = period_id => {
+    const ids = periodsCheckeds;
+
+    const exists = ids.find(e => {
+      return e === period_id;
+    });
+
+    if (!exists) {
+      ids.push(period_id);
+    } else {
+      const index = ids.findIndex(e => e === period_id);
+      ids.splice(index, 1);
+    }
+
+    setPeriodsCheckeds([...ids]);
   };
 
   const checkService = service_id => {
@@ -177,7 +236,10 @@ export default function SignUpStep2({ navigation }) {
     });
 
     if (!exists) {
-      ids.push({ service_id, value: 0 });
+      ids.push({
+        service_id,
+        value: services.find(e => e.id === service_id).min_value,
+      });
     } else {
       const index = ids.findIndex(e => e.service_id === service_id);
       ids.splice(index, 1);
@@ -194,32 +256,83 @@ export default function SignUpStep2({ navigation }) {
     setServicesCheckeds([...ids]);
   };
 
+  const checkStuff = stuff_id => {
+    const ids = stuffsCheckeds;
+
+    const exists = ids.find(e => {
+      return e === stuff_id;
+    });
+
+    if (!exists) {
+      ids.push(stuff_id);
+    } else {
+      const index = ids.findIndex(e => e === stuff_id);
+      ids.splice(index, 1);
+    }
+
+    setStuffsCheckeds([...ids]);
+  };
+
+  const renderClocks = () => {
+    return clocks.map(({ id, name }) => (
+      <Div direction="row" key={`clock-${id}`}>
+        <Div width="8%">
+          <TermsCheckBox
+            checked={!!clocksCheckeds.find(e => e === id)}
+            onPress={() => checkClock(id)}
+          />
+        </Div>
+        <Div justify="center" width="90%">
+          <TouchableWithoutFeedback onPress={() => checkClock(id)}>
+            <BodyText>{name}</BodyText>
+          </TouchableWithoutFeedback>
+        </Div>
+      </Div>
+    ));
+  };
+
+  const renderPeriods = () => {
+    return periods.map(({ id, name }) => (
+      <Div direction="row" key={`period-${id}`}>
+        <Div width="8%">
+          <TermsCheckBox
+            checked={!!periodsCheckeds.find(e => e === id)}
+            onPress={() => checkPeriod(id)}
+          />
+        </Div>
+        <Div justify="center" width="90%">
+          <TouchableWithoutFeedback onPress={() => checkPeriod(id)}>
+            <BodyText>{name}</BodyText>
+          </TouchableWithoutFeedback>
+        </Div>
+      </Div>
+    ));
+  };
+
   const renderServices = () => {
-    return services.map(({ id: service_id, max_value, min_value, name }) => (
-      <Div key={`service-${service_id}`} marginBottom>
+    return services.map(({ id, max_value, min_value, name }) => (
+      <Div key={`service-${id}`}>
         <Div direction="row">
           <Div width="8%">
             <TermsCheckBox
-              checked={
-                !!servicesCheckeds.find(e => e.service_id === service_id)
-              }
-              onPress={() => checkService(service_id)}
+              checked={!!servicesCheckeds.find(e => e.service_id === id)}
+              onPress={() => checkService(id)}
             />
           </Div>
           <Div justify="center" width="90%">
-            <TouchableWithoutFeedback onPress={() => checkService(service_id)}>
-              <BodyText>{name}.</BodyText>
+            <TouchableWithoutFeedback onPress={() => checkService(id)}>
+              <BodyText>{name}</BodyText>
             </TouchableWithoutFeedback>
           </Div>
         </Div>
-        {!!servicesCheckeds.find(e => e.service_id === service_id) && (
+        {!!servicesCheckeds.find(e => e.service_id === id) && (
           <Div align="center" direction="row" justify="space-between">
             <Slider
               maximumTrackTintColor="#497697"
               maximumValue={max_value}
               minimumTrackTintColor="#1ec5ea"
               minimumValue={min_value}
-              onSlidingComplete={value => checkServiceValue(value, service_id)}
+              onSlidingComplete={value => checkServiceValue(value, id)}
               step={1}
             />
             <Div
@@ -228,12 +341,30 @@ export default function SignUpStep2({ navigation }) {
             >
               <BodyText size="20px">
                 R$
-                {servicesCheckeds.find(e => e.service_id === service_id).value}
+                {servicesCheckeds.find(e => e.service_id === id).value}
                 ,00
               </BodyText>
             </Div>
           </Div>
         )}
+      </Div>
+    ));
+  };
+
+  const renderStuffs = () => {
+    return stuffs.map(({ id, name }) => (
+      <Div direction="row" key={`stuff-${id}`}>
+        <Div width="8%">
+          <TermsCheckBox
+            checked={!!stuffsCheckeds.find(e => e === id)}
+            onPress={() => checkStuff(id)}
+          />
+        </Div>
+        <Div justify="center" width="90%">
+          <TouchableWithoutFeedback onPress={() => checkStuff(id)}>
+            <BodyText>{name}</BodyText>
+          </TouchableWithoutFeedback>
+        </Div>
       </Div>
     ));
   };
@@ -258,63 +389,77 @@ export default function SignUpStep2({ navigation }) {
             Art party bitters twee humblebrag polaroid typewriter cold-pressed
             hammock direct trade photo booth shaman.
           </HeaderSubTitle>
-          <Divisor />
+          <Divisor marginTop="15px" />
 
-          <Div marginBottom>
-            <Div direction="column" justify="flex-start" marginBottom>
-              <InputTitle>Ocupation</InputTitle>
-              <Input onChangeText={setStreet} value={street} />
-            </Div>
+          <Div direction="column" justify="flex-start" marginBottom>
+            <InputTitle>Ocupation</InputTitle>
+            <Input onChangeText={setOcupation} value={ocupation} />
+          </Div>
 
-            <Div direction="column" justify="flex-start" marginBottom>
-              <InputTitle>Certification</InputTitle>
-              <Div direction="row" justify="space-between">
-                <Div width="20%">
-                  <TouchableWithoutFeedback
-                    onPress={() => handleSelectAvatar('pictureLicense')}
-                  >
-                    <FrendleeProfilePicture
-                      source={{ uri: pictureCertification }}
-                    />
-                  </TouchableWithoutFeedback>
-                </Div>
-
-                <Div align="flex-start" justify="center" width="80%">
-                  <BodyText>PDF or JPG files.</BodyText>
-                </Div>
-              </Div>
-            </Div>
-
-            <Div direction="row">
-              <Div width="8%">
-                <TermsCheckBox
-                  checked={checked}
-                  onPress={() => setChecked(!checked)}
-                />
-              </Div>
-              <Div justify="center" width="90%">
-                <TouchableWithoutFeedback onPress={() => setChecked(!checked)}>
-                  <BodyText>Enable to provide medical services.</BodyText>
+          <Div direction="column" justify="flex-start" marginBottom>
+            <InputTitle>Certification</InputTitle>
+            <Div direction="row" justify="space-between">
+              <Div width="20%">
+                <TouchableWithoutFeedback
+                  onPress={() => handleSelectAvatar('pictureCertification')}
+                >
+                  <FrendleeProfilePicture
+                    source={{ uri: pictureCertification }}
+                  />
                 </TouchableWithoutFeedback>
               </Div>
+
+              <Div align="flex-start" justify="center" width="80%">
+                <BodyText>PDF or JPG files</BodyText>
+              </Div>
             </Div>
+          </Div>
 
-            <Divisor marginTop="10px" />
-
-            <Div marginBottom>
-              <InputTitle>Activities, services and others stuffs</InputTitle>
-              <BodyText>Types of services that I provide:</BodyText>
+          <Div direction="row">
+            <Div width="8%">
+              <TermsCheckBox
+                checked={checked}
+                onPress={() => setChecked(!checked)}
+              />
             </Div>
-
-            <Div marginBottom>{renderServices()}</Div>
-
-            <Divisor />
-
-            <Div marginBotton>
-              <ButtonNext state={false}>
-                <ButtonNextText>NEXT STEP</ButtonNextText>
-              </ButtonNext>
+            <Div justify="center" width="90%">
+              <TouchableWithoutFeedback onPress={() => setChecked(!checked)}>
+                <BodyText>Enable to provide medical services</BodyText>
+              </TouchableWithoutFeedback>
             </Div>
+          </Div>
+
+          <Divisor marginTop="10px" />
+
+          <Div marginBottom>
+            <InputTitle>Activities, services and others stuffs</InputTitle>
+            <BodyText>Types of services that I provide:</BodyText>
+          </Div>
+
+          <Div marginBottom>{renderServices()}</Div>
+
+          <Div marginBottom>
+            <BodyText>What I like more:</BodyText>
+          </Div>
+          <Div marginBottom>{renderStuffs()}</Div>
+
+          <Div marginBottom>
+            <InputTitle>Availability</InputTitle>
+            <BodyText>Periods:</BodyText>
+          </Div>
+          <Div marginBottom>{renderClocks()}</Div>
+
+          <Div marginBottom>
+            <BodyText>Hours:</BodyText>
+          </Div>
+          <Div>{renderPeriods()}</Div>
+
+          <Divisor />
+
+          <Div marginBotton>
+            <ButtonNext state={buttonState} onPress={handleNext}>
+              <ButtonNextText>NEXT STEP</ButtonNextText>
+            </ButtonNext>
           </Div>
         </BlockBody>
 

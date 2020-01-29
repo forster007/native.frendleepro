@@ -22,13 +22,13 @@ const SignStack = createStackNavigator(
       },
       {
         headerMode: 'none',
-        initialRouteName: 'SignUpStep1',
+        initialRouteName: 'SignUpStep3',
       }
     ),
   },
   {
     headerMode: 'none',
-    initialRouteName: 'SignIn',
+    initialRouteName: 'SignUp',
   }
 );
 
