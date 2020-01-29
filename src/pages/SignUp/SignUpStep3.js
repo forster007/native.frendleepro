@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import {
   BlockBody,
   BlockFooter,
@@ -32,10 +33,11 @@ export default function SignUpStep2({ navigation }) {
   const [validPassword, setValidPassword] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const data = navigation.getParam('data');
-    setUser(data ? data.email : '');
+    setUser(data ? data.user.email : '');
   }, []);
 
   useEffect(() => {
@@ -53,13 +55,35 @@ export default function SignUpStep2({ navigation }) {
     setValidPassword(regex.test(password));
   }, [password, validPassword]);
 
-  const handleNext = () => {
-    const data = navigation.getParam('data');
+  async function handleSignUp() {
+    try {
+      setLoading(true);
 
-    data.password = password;
+      const data = await navigation.getParam('data');
+      const formData = new FormData();
 
-    console.log(data);
-  };
+      data.user.password = password;
+
+      formData.append('picture_address', data.picture_address);
+      formData.append('picture_certification', data.picture_certification);
+      formData.append('picture_license', data.picture_license);
+      formData.append('picture_profile', data.picture_profile);
+      delete data.picture_address;
+      delete data.picture_certification;
+      delete data.picture_license;
+      delete data.picture_profile;
+
+      const { data: provider } = await api.post('/providers', data);
+      api.defaults.headers.common.Authorization = `Bearer ${provider.token}`;
+
+      const { id } = provider;
+      await api.post(`/providers/${id}/files`, formData);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Container>
@@ -132,8 +156,16 @@ export default function SignUpStep2({ navigation }) {
               </Div>
             </Div>
 
-            <ButtonNext state={buttonState} onPress={handleNext}>
-              <ButtonNextText>NEXT STEP</ButtonNextText>
+            <ButtonNext
+              enabled={!loading}
+              onPress={handleSignUp}
+              state={buttonState}
+            >
+              {loading ? (
+                <ActivityIndicator />
+              ) : (
+                <ButtonNextText>TAKE ME TO THE APP</ButtonNextText>
+              )}
             </ButtonNext>
           </Div>
         </BlockBody>

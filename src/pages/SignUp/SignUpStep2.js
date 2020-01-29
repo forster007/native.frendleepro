@@ -190,6 +190,7 @@ export default function SignUpStep2({ navigation }) {
     data.provider_clocks = clocksCheckeds;
     data.provider_periods = periodsCheckeds;
     data.provider_services = servicesCheckeds;
+    data.provider_stuffs = stuffsCheckeds;
 
     navigation.navigate('SignUpStep3', { data });
   };
