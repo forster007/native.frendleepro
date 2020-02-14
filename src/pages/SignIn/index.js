@@ -5,7 +5,6 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesome } from '@expo/vector-icons';
 
 import { signInRequest } from '../../store/modules/auth/actions';
 
@@ -13,8 +12,6 @@ import {
   Background,
   ButtonsContainer,
   Container,
-  FacebookButton,
-  FacebookButtonText,
   FormContainer,
   Input,
   InputContainer,
@@ -28,8 +25,8 @@ function SignIn({ navigation }) {
   const dispatch = useDispatch();
   const { loading } = useSelector(state => state.auth);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('forster000@gmail.com');
+  const [password, setPassword] = useState('aaaa@1234');
 
   async function handleSignIn() {
     dispatch(signInRequest(email, password));

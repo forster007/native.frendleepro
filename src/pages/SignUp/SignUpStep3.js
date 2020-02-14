@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert } from 'react-native';
 import {
   BlockBody,
   BlockFooter,
@@ -26,27 +26,19 @@ import {
 
 import api from '~/services/api';
 
-export default function SignUpStep2({ navigation }) {
+export default function SignUpStep3({ navigation }) {
   const [buttonState, setButtonState] = useState(false);
-  const [user, setUser] = useState('');
-  const [password, setPassword] = useState('');
-  const [validPassword, setValidPassword] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [user, setUser] = useState('');
+  const [validPassword, setValidPassword] = useState(false);
 
   useEffect(() => {
     const data = navigation.getParam('data');
     setUser(data ? data.user.email : '');
   }, []);
-
-  useEffect(() => {
-    if (user && password && validPassword && checked) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
-    }
-  }, [user, password, validPassword, checked]);
 
   useEffect(() => {
     const regex = new RegExp(
@@ -55,7 +47,7 @@ export default function SignUpStep2({ navigation }) {
     setValidPassword(regex.test(password));
   }, [password, validPassword]);
 
-  async function handleSignUp() {
+  const handleSignUp = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -68,6 +60,7 @@ export default function SignUpStep2({ navigation }) {
       formData.append('picture_certification', data.picture_certification);
       formData.append('picture_license', data.picture_license);
       formData.append('picture_profile', data.picture_profile);
+
       delete data.picture_address;
       delete data.picture_certification;
       delete data.picture_license;
@@ -76,14 +69,31 @@ export default function SignUpStep2({ navigation }) {
       const { data: provider } = await api.post('/providers', data);
       api.defaults.headers.common.Authorization = `Bearer ${provider.token}`;
 
-      const { id } = provider;
-      await api.post(`/providers/${id}/files`, formData);
+      await api.post(`/providers/files`, formData);
+
+      Alert.alert(
+        'SUCCESS',
+        'Register successfully sent! Open your email and click on the verification link. After review by our staff, you will be advised of the deferment',
+        [
+          {
+            text: 'Ok',
+            onPress: () => navigation.navigate('SignIn'),
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      Alert.alert(JSON.stringify(error));
     }
-  }
+  });
+
+  useEffect(() => {
+    if (user && password && validPassword && checked) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [user, password, validPassword, checked]);
 
   return (
     <Container>

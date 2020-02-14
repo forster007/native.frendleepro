@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -6,7 +5,8 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { isValidateBSN } from '../../services/helpers';
+import { getAddress } from '../../services/address';
+import { isEmail, isValidateBSN } from '../../services/helpers';
 import {
   BlockBody,
   BlockFooter,
@@ -34,7 +34,6 @@ import {
   Input,
   InputDatePicker,
   InputIcon,
-  InputMasked,
   InputTitle,
   StepNumber,
   StepText,
@@ -44,6 +43,8 @@ import api from '~/services/api';
 export default function SignUpStep1({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
 
+  const bsnInputRef = useRef();
+  const nameInputRef = useRef();
   const lastnameInputRef = useRef();
   const emailInputRef = useRef();
   const phoneInputRef = useRef();
@@ -60,21 +61,42 @@ export default function SignUpStep1({ navigation }) {
   const [name, setName] = useState('');
   const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
+  const [status] = useState('locked');
 
-  const [postalCode, setPostalCode] = useState('');
-  const [street, setStreet] = useState('');
-  const [number, setNumber] = useState('');
-  const [complement, setComplement] = useState('');
-  const [district, setDistrict] = useState('');
   const [city, setCity] = useState('');
+  const [complement, setComplement] = useState('');
+  const [country] = useState('Holland');
+  const [district, setDistrict] = useState('');
+  const [number, setNumber] = useState('');
+  const [postalCode, setPostalCode] = useState('');
   const [state, setState] = useState('');
-  const [country, setCountry] = useState('');
+  const [street, setStreet] = useState('');
 
   const [validBsn, setValidBsn] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const [validPhone, setValidPhone] = useState(false);
 
-  const selectImage = async (option, result) => {
+  const handleAddress = useCallback(async () => {
+    if (postalCode && number) {
+      try {
+        const { data } = await getAddress(postalCode, number);
+
+        setCity(data.city);
+        setDistrict(data.municipality);
+        setState(data.province);
+        setStreet(data.street);
+      } catch (error) {
+        Alert.alert('WARNING', error.response.data.exception);
+
+        setCity('');
+        setDistrict('');
+        setState('');
+        setStreet('');
+      }
+    }
+  });
+
+  const handleAvatar = useCallback(async (option, result) => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
       compress: 0.5,
       format: ImageManipulator.SaveFormat.JPEG,
@@ -93,10 +115,42 @@ export default function SignUpStep1({ navigation }) {
       default:
         break;
     }
-  };
+  });
 
-  const handleSelectAvatar = useCallback(option => {
-    const options = ['Tirar foto', 'Buscar da galeria', 'Cancelar'];
+  const handleBSN = useCallback(async () => {
+    if (bsn && bsn.length === 9 && isValidateBSN([...bsn])) {
+      const { data } = await api.get(`/checks?field=bsn&value=${bsn}`);
+      setValidBsn(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'BSN already in use');
+      }
+    } else if (bsn && bsn.length === 9 && !isValidateBSN([...bsn])) {
+      Alert.alert('WARNING', 'BSN invalid');
+      setValidEmail(false);
+    } else {
+      setValidBsn(false);
+    }
+  });
+
+  const handleEmail = useCallback(async () => {
+    if (email && isEmail(email)) {
+      const { data } = await api.get(`/checks?field=email&value=${email}`);
+      setValidEmail(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'EMAIL already in use');
+      }
+    } else if (email && !isEmail(email)) {
+      Alert.alert('WARNING', 'EMAIL invalid');
+      setValidEmail(false);
+    } else {
+      setValidEmail(false);
+    }
+  });
+
+  const handleImage = useCallback(option => {
+    const options = ['Take a picture', 'Find on galery', 'Cancel'];
     const cancelButtonIndex = 2;
 
     showActionSheetWithOptions(
@@ -110,12 +164,12 @@ export default function SignUpStep1({ navigation }) {
         switch (buttonIndex) {
           case 0:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
+              const perm = await Permissions.askAsync(
                 Permissions.CAMERA,
                 Permissions.CAMERA_ROLL
               );
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da câmera para você tirar uma foto'
@@ -128,23 +182,21 @@ export default function SignUpStep1({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectImage(option, result);
+            handleAvatar(option, result);
 
             break;
           case 1:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
-                Permissions.CAMERA_ROLL
-              );
+              const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da galeria para selecionar uma imagem'
@@ -157,14 +209,14 @@ export default function SignUpStep1({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectImage(option, result);
+            handleAvatar(option, result);
 
             break;
           default:
@@ -172,9 +224,9 @@ export default function SignUpStep1({ navigation }) {
         }
       }
     );
-  }, []);
+  });
 
-  function handleNext() {
+  const handleNext = useCallback(() => {
     const filenamePictureAddress = pictureAddress.split('/').pop();
     const filenamePictureLicense = pictureLicense.split('/').pop();
     const filenamePictureProfile = pictureProfile.split('/').pop();
@@ -187,7 +239,11 @@ export default function SignUpStep1({ navigation }) {
       phone_number: phone,
       phone_number_is_whatsapp: true,
       ssn: bsn,
-      user: { account_type, email },
+      user: {
+        account_type,
+        email,
+        status,
+      },
       picture_address: {
         uri: pictureAddress,
         name: filenamePictureAddress,
@@ -216,40 +272,40 @@ export default function SignUpStep1({ navigation }) {
     };
 
     navigation.navigate('SignUpStep2', { data });
-  }
+  });
+
+  const handlePhone = useCallback(async () => {
+    if (phone && phone.length >= 6) {
+      const { data } = await api.get(
+        `/checks?field=phone_number&value=${phone}`
+      );
+      setValidPhone(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'PHONE already in use');
+      }
+    } else if (phone && phone.length < 6) {
+      Alert.alert('WARNING', 'PHONE invalid');
+      setValidPhone(false);
+    } else {
+      setValidPhone(false);
+    }
+  });
 
   useEffect(() => {
-    if (bsn && isValidateBSN([...bsn])) {
-      setTimeout(async () => {
-        const { data } = await api.get(`/checks?field=bsn&value=${bsn}`);
-        setValidBsn(data.available);
-      }, 2 * 1000);
-    } else {
+    if (bsn && bsn.length !== 9) {
       setValidBsn(false);
     }
   }, [bsn, validBsn]);
 
   useEffect(() => {
-    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (email && regex.test(email)) {
-      setTimeout(async () => {
-        const { data } = await api.get(`/checks?field=email&value=${email}`);
-        setValidEmail(data.available);
-      }, 2 * 1000);
-    } else {
+    if (email && !isEmail(email)) {
       setValidEmail(false);
     }
   }, [email, validEmail]);
 
   useEffect(() => {
-    if (phone && phone.length === 15) {
-      setTimeout(async () => {
-        const { data } = await api.get(
-          `/checks?field=phone_number&value=${phone}`
-        );
-        setValidPhone(data.available);
-      }, 2 * 1000);
-    } else {
+    if (phone && phone.length < 6) {
       setValidPhone(false);
     }
   }, [phone, validPhone]);
@@ -267,13 +323,13 @@ export default function SignUpStep1({ navigation }) {
       phone &&
       validBsn &&
       validEmail &&
+      validPhone &&
       postalCode &&
       street &&
       number &&
       district &&
       city &&
-      state &&
-      country
+      state
     ) {
       setButtonState(true);
     } else {
@@ -291,13 +347,13 @@ export default function SignUpStep1({ navigation }) {
     phone,
     validBsn,
     validEmail,
+    validPhone,
     postalCode,
     street,
     number,
     district,
     city,
     state,
-    country,
   ]);
 
   return (
@@ -337,7 +393,11 @@ export default function SignUpStep1({ navigation }) {
               autoCorrect={false}
               keyboardType="numeric"
               maxLength={9}
+              onBlur={handleBSN}
               onChangeText={setBsn}
+              onSubmitEditing={() => nameInputRef.current.focus()}
+              ref={bsnInputRef}
+              returnKeyType="next"
               value={bsn}
             />
             <ButtonInput>
@@ -353,7 +413,7 @@ export default function SignUpStep1({ navigation }) {
             <Div direction="row" justify="space-between">
               <Div width="20%">
                 <TouchableWithoutFeedback
-                  onPress={() => handleSelectAvatar('pictureLicense')}
+                  onPress={() => handleImage('pictureLicense')}
                 >
                   <FrendleeProfilePicture source={{ uri: pictureLicense }} />
                 </TouchableWithoutFeedback>
@@ -376,7 +436,7 @@ export default function SignUpStep1({ navigation }) {
             <Div direction="row" justify="space-between">
               <Div width="20%">
                 <TouchableWithoutFeedback
-                  onPress={() => handleSelectAvatar('pictureProfile')}
+                  onPress={() => handleImage('pictureProfile')}
                 >
                   <FrendleeProfilePicture source={{ uri: pictureProfile }} />
                 </TouchableWithoutFeedback>
@@ -397,6 +457,7 @@ export default function SignUpStep1({ navigation }) {
               autoCorrect={false}
               onChangeText={setName}
               onSubmitEditing={() => lastnameInputRef.current.focus()}
+              ref={nameInputRef}
               returnKeyType="next"
               value={name}
             />
@@ -422,10 +483,9 @@ export default function SignUpStep1({ navigation }) {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
+                onBlur={handleEmail}
                 onChangeText={setEmail}
-                onSubmitEditing={() =>
-                  phoneInputRef.current._inputElement.focus()
-                }
+                onSubmitEditing={() => phoneInputRef.current.focus()}
                 ref={emailInputRef}
                 returnKeyType="next"
                 value={email}
@@ -444,11 +504,11 @@ export default function SignUpStep1({ navigation }) {
             <Div width="48%">
               <InputTitle>Telephone</InputTitle>
               <Div align="center" direction="row">
-                <InputMasked
+                <Input
+                  onBlur={handlePhone}
                   onChangeText={text => setPhone(text)}
                   ref={phoneInputRef}
-                  refInput={phoneInputRef}
-                  type="cel-phone"
+                  keyboardType="numeric"
                   value={phone}
                 />
                 <ButtonInput>
@@ -492,70 +552,13 @@ export default function SignUpStep1({ navigation }) {
           <Divisor />
 
           <BodyTitle>Address</BodyTitle>
-          <Div
-            align="center"
-            direction="row"
-            justify="space-between"
-            marginBottom
-          >
-            <Div width="40%">
-              <InputTitle>Postal code</InputTitle>
-              <Input onChangeText={setPostalCode} value={postalCode} />
-            </Div>
-
-            <Div width="56%">
-              <BodyText style={{ top: 15 }}>
-                Enter your zip code and confirm your address
-              </BodyText>
-            </Div>
-          </Div>
 
           <Div direction="column" justify="flex-start" marginBottom>
-            <InputTitle>Street</InputTitle>
-            <Input onChangeText={setStreet} value={street} />
-          </Div>
-
-          <Div direction="row" justify="space-between" marginBottom>
-            <Div width="30%">
-              <InputTitle>Number</InputTitle>
-              <Input onChangeText={setNumber} value={number} />
-            </Div>
-
-            <Div width="66%">
-              <InputTitle>Complement</InputTitle>
-              <Input onChangeText={setComplement} value={complement} />
-            </Div>
-          </Div>
-
-          <Div direction="row" justify="space-between" marginBottom>
-            <Div width="48%">
-              <InputTitle>District</InputTitle>
-              <Input onChangeText={setDistrict} value={district} />
-            </Div>
-
-            <Div width="48%">
-              <InputTitle>City</InputTitle>
-              <Input onChangeText={setCity} value={city} />
-            </Div>
-          </Div>
-
-          <Div direction="row" justify="space-between" marginBottom>
-            <Div width="66%">
-              <InputTitle>State</InputTitle>
-              <Input onChangeText={setState} value={state} />
-            </Div>
-            <Div width="30%">
-              <InputTitle>Country</InputTitle>
-              <Input onChangeText={setCountry} value={country} />
-            </Div>
-          </Div>
-
-          <Div direction="column" justify="flex-start">
             <InputTitle>Address comprovement</InputTitle>
             <Div direction="row" justify="space-between">
               <Div width="20%">
                 <TouchableWithoutFeedback
-                  onPress={() => handleSelectAvatar('pictureAddress')}
+                  onPress={() => handleImage('pictureAddress')}
                 >
                   <FrendleeProfilePicture source={{ uri: pictureAddress }} />
                 </TouchableWithoutFeedback>
@@ -568,6 +571,77 @@ export default function SignUpStep1({ navigation }) {
                 </BodyText>
               </Div>
             </Div>
+          </Div>
+
+          <Div direction="row" justify="space-between" marginBottom>
+            <Div width="48%">
+              <InputTitle>Postcode</InputTitle>
+              <Input
+                autoCapitalize="characters"
+                maxLength={6}
+                minLength={6}
+                onBlur={handleAddress}
+                onChangeText={setPostalCode}
+                value={postalCode}
+              />
+            </Div>
+
+            <Div width="48%">
+              <InputTitle>House number</InputTitle>
+              <Input
+                keyboardType="numeric"
+                onBlur={handleAddress}
+                onChangeText={setNumber}
+                value={number}
+              />
+            </Div>
+          </Div>
+
+          <Div direction="column" justify="flex-start" marginBottom>
+            <InputTitle>Street</InputTitle>
+            <Input
+              disabled
+              editable={false}
+              onChangeText={setStreet}
+              value={street}
+            />
+          </Div>
+
+          <Div direction="column" justify="flex-start" marginBottom>
+            <InputTitle>Complement</InputTitle>
+            <Input onChangeText={setComplement} value={complement} />
+          </Div>
+
+          <Div direction="row" justify="space-between" marginBottom>
+            <Div width="48%">
+              <InputTitle>District</InputTitle>
+              <Input
+                disabled
+                editable={false}
+                onChangeText={setDistrict}
+                value={district}
+              />
+            </Div>
+
+            <Div width="48%">
+              <InputTitle>City</InputTitle>
+              <Input
+                disabled
+                editable={false}
+                onChangeText={setCity}
+                value={city}
+              />
+            </Div>
+          </Div>
+
+          <Div direction="column" justify="flex-start">
+            <InputTitle>State</InputTitle>
+            <Input
+              disabled
+              editable={false}
+              onChangeText={setState}
+              value={state}
+            />
           </Div>
 
           <Divisor />

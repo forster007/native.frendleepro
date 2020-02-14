@@ -10,7 +10,6 @@ import {
   BlockFooter,
   BlockHeader,
   BodyText,
-  BodyTitle,
   ButtonNext,
   ButtonNextText,
   Container,
@@ -64,23 +63,17 @@ export default function SignUpStep2({ navigation }) {
     getServices();
   }, []);
 
-  const selectImage = async (option, result) => {
+  const handleAvatar = useCallback(async result => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
-      compress: 0.5,
+      compress: 0.4,
       format: ImageManipulator.SaveFormat.JPEG,
     });
 
-    switch (option) {
-      case 'pictureCertification':
-        setPictureCertification(image.uri);
-        break;
-      default:
-        break;
-    }
-  };
+    setPictureCertification(image.uri);
+  });
 
-  const handleSelectAvatar = useCallback(option => {
-    const options = ['Tirar foto', 'Buscar da galeria', 'Cancelar'];
+  const handleImage = useCallback(() => {
+    const options = ['Take a picture', 'Find on galery', 'Cancel'];
     const cancelButtonIndex = 2;
 
     showActionSheetWithOptions(
@@ -94,12 +87,12 @@ export default function SignUpStep2({ navigation }) {
         switch (buttonIndex) {
           case 0:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
+              const perm = await Permissions.askAsync(
                 Permissions.CAMERA,
                 Permissions.CAMERA_ROLL
               );
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da câmera para você tirar uma foto'
@@ -112,23 +105,21 @@ export default function SignUpStep2({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectImage(option, result);
+            handleAvatar(result);
 
             break;
           case 1:
             if (Constants.platform.ios) {
-              const { status } = await Permissions.askAsync(
-                Permissions.CAMERA_ROLL
-              );
+              const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
-              if (status !== 'granted') {
+              if (perm.status !== 'granted') {
                 Alert.alert(
                   'Eita!',
                   'Precisamos da permissão da galeria para selecionar uma imagem'
@@ -141,14 +132,14 @@ export default function SignUpStep2({ navigation }) {
               mediaTypes: 'Images',
               aspect: [1, 1],
               allowsEditing: true,
-              quality: 0.8,
+              quality: 0.4,
             });
 
             if (result.cancelled) {
               break;
             }
 
-            selectImage(option, result);
+            handleAvatar(result);
 
             break;
           default:
@@ -156,22 +147,9 @@ export default function SignUpStep2({ navigation }) {
         }
       }
     );
-  }, []);
+  });
 
-  useEffect(() => {
-    if (
-      clocksCheckeds.length >= 1 &&
-      periodsCheckeds.length >= 1 &&
-      servicesCheckeds.length >= 1 &&
-      stuffsCheckeds.length >= 1
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
-    }
-  }, [clocksCheckeds, periodsCheckeds, servicesCheckeds, stuffsCheckeds]);
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const data = navigation.getParam('data');
 
     if (pictureCertification) {
@@ -193,7 +171,7 @@ export default function SignUpStep2({ navigation }) {
     data.provider_stuffs = stuffsCheckeds;
 
     navigation.navigate('SignUpStep3', { data });
-  };
+  });
 
   const checkClock = clock_id => {
     const ids = clocksCheckeds;
@@ -370,6 +348,19 @@ export default function SignUpStep2({ navigation }) {
     ));
   };
 
+  useEffect(() => {
+    if (
+      clocksCheckeds.length >= 1 &&
+      periodsCheckeds.length >= 1 &&
+      servicesCheckeds.length >= 1 &&
+      stuffsCheckeds.length >= 1
+    ) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  }, [clocksCheckeds, periodsCheckeds, servicesCheckeds, stuffsCheckeds]);
+
   return (
     <Container>
       <Content>
@@ -401,9 +392,7 @@ export default function SignUpStep2({ navigation }) {
             <InputTitle>Certification</InputTitle>
             <Div direction="row" justify="space-between">
               <Div width="20%">
-                <TouchableWithoutFeedback
-                  onPress={() => handleSelectAvatar('pictureCertification')}
-                >
+                <TouchableWithoutFeedback onPress={handleImage}>
                   <FrendleeProfilePicture
                     source={{ uri: pictureCertification }}
                   />
@@ -457,7 +446,7 @@ export default function SignUpStep2({ navigation }) {
 
           <Divisor />
 
-          <Div marginBotton>
+          <Div marginBotton style={{ marginBottom: 20 }}>
             <ButtonNext state={buttonState} onPress={handleNext}>
               <ButtonNextText>NEXT STEP</ButtonNextText>
             </ButtonNext>
