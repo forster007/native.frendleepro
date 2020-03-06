@@ -69,17 +69,12 @@ export default function SignUpStep3({ navigation }) {
       const { data: provider } = await api.post('/providers', data);
       api.defaults.headers.common.Authorization = `Bearer ${provider.token}`;
 
-      await api.post(`/providers/files`, formData);
+      await api.post(`/providers/${provider.id}/files`, formData);
 
       Alert.alert(
         'SUCCESS',
         'Register successfully sent! Open your email and click on the verification link. After review by our staff, you will be advised of the deferment',
-        [
-          {
-            text: 'Ok',
-            onPress: () => navigation.navigate('SignIn'),
-          },
-        ],
+        [{ text: 'Ok', onPress: () => navigation.navigate('SignIn') }],
         { cancelable: false }
       );
     } catch (error) {

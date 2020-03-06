@@ -42,8 +42,8 @@ export default function SignUpStep2({ navigation }) {
   const [ocupation, setOcupation] = useState('');
   const [buttonState, setButtonState] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [clocksCheckeds, setClocksCheckeds] = useState([]);
-  const [periodsCheckeds, setPeriodsCheckeds] = useState([]);
+  const [clocksCheckeds, setClocksCheckeds] = useState();
+  const [periodsCheckeds, setPeriodsCheckeds] = useState();
   const [servicesCheckeds, setServicesCheckeds] = useState([]);
   const [stuffsCheckeds, setStuffsCheckeds] = useState([]);
 
@@ -174,37 +174,11 @@ export default function SignUpStep2({ navigation }) {
   });
 
   const checkClock = clock_id => {
-    const ids = clocksCheckeds;
-
-    const exists = ids.find(e => {
-      return e === clock_id;
-    });
-
-    if (!exists) {
-      ids.push(clock_id);
-    } else {
-      const index = ids.findIndex(e => e === clock_id);
-      ids.splice(index, 1);
-    }
-
-    setClocksCheckeds([...ids]);
+    setClocksCheckeds(clock_id);
   };
 
   const checkPeriod = period_id => {
-    const ids = periodsCheckeds;
-
-    const exists = ids.find(e => {
-      return e === period_id;
-    });
-
-    if (!exists) {
-      ids.push(period_id);
-    } else {
-      const index = ids.findIndex(e => e === period_id);
-      ids.splice(index, 1);
-    }
-
-    setPeriodsCheckeds([...ids]);
+    setPeriodsCheckeds(period_id);
   };
 
   const checkService = service_id => {
@@ -257,7 +231,7 @@ export default function SignUpStep2({ navigation }) {
       <Div direction="row" key={`clock-${id}`}>
         <Div width="8%">
           <TermsCheckBox
-            checked={!!clocksCheckeds.find(e => e === id)}
+            checked={clocksCheckeds === id}
             onPress={() => checkClock(id)}
           />
         </Div>
@@ -275,7 +249,7 @@ export default function SignUpStep2({ navigation }) {
       <Div direction="row" key={`period-${id}`}>
         <Div width="8%">
           <TermsCheckBox
-            checked={!!periodsCheckeds.find(e => e === id)}
+            checked={periodsCheckeds === id}
             onPress={() => checkPeriod(id)}
           />
         </Div>
@@ -350,8 +324,8 @@ export default function SignUpStep2({ navigation }) {
 
   useEffect(() => {
     if (
-      clocksCheckeds.length >= 1 &&
-      periodsCheckeds.length >= 1 &&
+      clocksCheckeds &&
+      periodsCheckeds &&
       servicesCheckeds.length >= 1 &&
       stuffsCheckeds.length >= 1
     ) {
@@ -425,7 +399,6 @@ export default function SignUpStep2({ navigation }) {
             <InputTitle>Activities, services and others stuffs</InputTitle>
             <BodyText>Types of services that I provide:</BodyText>
           </Div>
-
           <Div marginBottom>{renderServices()}</Div>
 
           <Div marginBottom>
@@ -435,12 +408,12 @@ export default function SignUpStep2({ navigation }) {
 
           <Div marginBottom>
             <InputTitle>Availability</InputTitle>
-            <BodyText>Periods:</BodyText>
+            <BodyText>Clocks:</BodyText>
           </Div>
           <Div marginBottom>{renderClocks()}</Div>
 
           <Div marginBottom>
-            <BodyText>Hours:</BodyText>
+            <BodyText>Periods:</BodyText>
           </Div>
           <Div>{renderPeriods()}</Div>
 
