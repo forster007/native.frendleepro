@@ -25,8 +25,8 @@ function SignIn({ navigation }) {
   const dispatch = useDispatch();
   const { loading } = useSelector(state => state.auth);
 
-  const [email, setEmail] = useState('forster000@gmail.com');
-  const [password, setPassword] = useState('aaaa@1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   async function handleSignIn() {
     dispatch(signInRequest(email, password));

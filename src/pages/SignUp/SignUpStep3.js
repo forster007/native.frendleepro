@@ -83,7 +83,8 @@ export default function SignUpStep3({ navigation }) {
         { cancelable: false }
       );
     } catch (error) {
-      Alert.alert(JSON.stringify(error));
+      console.log(error);
+      console.log(error.response);
     }
   });
 

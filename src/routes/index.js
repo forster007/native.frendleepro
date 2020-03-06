@@ -7,8 +7,8 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import SignIn from '~/pages/SignIn';
 import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
-import Home from '~/pages/Home';
 import Schedule from '~/pages/Schedule';
+import Requests from '~/pages/Requests';
 import ScheduleDetails from '~/pages/ScheduleDetails';
 
 const SignStack = createStackNavigator(
@@ -32,10 +32,29 @@ const SignStack = createStackNavigator(
   }
 );
 
-const AppTabs = createBottomTabNavigator({
-  Home,
-  Schedule,
-});
+const AppTabs = createBottomTabNavigator(
+  {
+    Schedule,
+    Requests,
+  },
+  {
+    tabBarOptions: {
+      activeBackgroundColor: '#003b6f',
+      activeTintColor: '#ffffff',
+      inactiveTintColor: '#003b6f',
+      style: {
+        borderTopWidth: 0,
+        height: 54,
+        elevation: 5,
+      },
+      labelStyle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        top: -15,
+      },
+    },
+  }
+);
 
 const AppStack = createStackNavigator(
   {
