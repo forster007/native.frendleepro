@@ -10,10 +10,12 @@ import {
   Content,
   Empty,
   Appointments,
-  AppointmentsCard,
+  Avatar,
+  Card,
   CardBody,
-  CardBodyDivisor,
-  CardBodyItem,
+  Divisor,
+  ItemAddress,
+  ItemClock,
   CardBodyItemInfo,
   CardBodyItemInfoIconClock,
   CardBodyItemInfoIconNav,
@@ -21,11 +23,14 @@ import {
   CardFooter,
   CardFooterText,
   CardHeader,
-  CardProviderProfile,
-  CardProviderProfileAvatar,
-  CardProviderProfileInfo,
-  CardProviderProfileNameText,
-  CardProviderProfileTitleText,
+  Info,
+  Profile,
+  ShortItemInfo,
+  ShortProfileName,
+  ShortProfileTitle,
+  LongItemInfo,
+  LongProfileName,
+  LongProfileTitle,
 } from './styles';
 import { Header } from '../../components';
 
@@ -95,136 +100,36 @@ export default function Schedule({ navigation }) {
     switch (expanded) {
       case true: {
         return (
-          <AppointmentsCard expanded onPress={() => handleSelected(id)}>
+          <Card expanded onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <Profile>
+                <Avatar source={avatar} />
+                <Info>
+                  <LongProfileTitle>{title}</LongProfileTitle>
+                  <LongProfileName>{name}</LongProfileName>
+                </Info>
+              </Profile>
             </CardHeader>
 
-            <View style={{ display: expanded ? 'none' : 'flex' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
+            <CardBody>
+              <ItemClock>
+                <LongItemInfo>
+                  <CardBodyItemInfoIconClock />
+                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
+                </LongItemInfo>
+              </ItemClock>
 
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahah</Text>
-                </View>
+              <Divisor />
 
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahaa</Text>
-                </View>
-              </View>
-
-              <View />
-            </View>
+              <ItemAddress>
+                <ShortItemInfo>
+                  <CardBodyItemInfoIconNav />
+                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
+                </ShortItemInfo>
+              </ItemAddress>
+            </CardBody>
 
             <View style={{ display: expanded ? 'flex' : 'none' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    qqqqqqqqqqqqqqqqqq
-                  </Text>
-                </View>
-
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    pppppppppppppppppppppp
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  marginHorizontal: 15,
-                }}
-              />
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  flexDirection: 'row',
-                  maxHeight: 120,
-                }}
-              >
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text
-                    numberOfLines={4}
-                    style={{
-                      color: '#000',
-                      fontSize: 14,
-                      lineHeight: 24,
-                      paddingVertical: 4,
-                    }}
-                  >
-                    uuuuuuuuuuuuuuuuuuuuuuuuuuu
-                  </Text>
-                </View>
-              </View>
-
               <View
                 style={{
                   borderBottomColor: '#CDCDCD',
@@ -247,41 +152,39 @@ export default function Schedule({ navigation }) {
 
               <View />
             </View>
-          </AppointmentsCard>
+          </Card>
         );
       }
 
       case false: {
         return (
-          <AppointmentsCard expanded={false} onPress={() => handleSelected(id)}>
+          <Card expanded={false} onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <Profile>
+                <Avatar source={avatar} />
+                <Info>
+                  <ShortProfileTitle>{title}</ShortProfileTitle>
+                  <ShortProfileName>{name}</ShortProfileName>
+                </Info>
+              </Profile>
             </CardHeader>
 
             <CardBody>
-              <CardBodyItem>
-                <CardBodyItemInfo>
+              <ItemClock>
+                <LongItemInfo>
                   <CardBodyItemInfoIconClock />
                   <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
-              <CardBodyDivisor />
-              <CardBodyItem>
-                <CardBodyItemInfo>
+                </LongItemInfo>
+              </ItemClock>
+
+              <Divisor />
+
+              <ItemAddress>
+                <ShortItemInfo>
                   <CardBodyItemInfoIconNav />
                   <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
+                </ShortItemInfo>
+              </ItemAddress>
             </CardBody>
 
             <CardFooter
@@ -290,7 +193,7 @@ export default function Schedule({ navigation }) {
             >
               <CardFooterText>{status}</CardFooterText>
             </CardFooter>
-          </AppointmentsCard>
+          </Card>
         );
       }
 
@@ -302,7 +205,7 @@ export default function Schedule({ navigation }) {
 
   return (
     <Container>
-      <Header left="goBack" title="Your appointments" />
+      <Header right="menu" title="Your appointments" />
 
       <Content>
         <Appointments

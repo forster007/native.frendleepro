@@ -21,40 +21,28 @@ export const Appointments = styled.FlatList.attrs({
     paddingTop: 15,
   },
 })`
-  padding-horizontal: 20px;
+  padding-horizontal: 12px;
 `;
 
-export const AppointmentsCard = styled.TouchableOpacity.attrs({
+export const Card = styled.TouchableOpacity.attrs({
   activeOpacity: 0.7,
 })`
   background-color: #ffffff;
   border-color: transparent;
   border-radius: 5px;
   flex-direction: column;
-  height: ${({ expanded }) => (expanded ? '400px' : '210px')};
-  justify-content: space-between;
+  height: ${({ expanded }) => (expanded ? '400px' : '122px')};
   margin-bottom: 10px;
   width: 100%;
 `;
 
 export const CardBody = styled.View`
-  justify-content: center;
   padding-horizontal: 10px;
 `;
 
-export const CardBodyDivisor = styled.View`
-  background-color: #f2f2f2;
-  height: 1px;
-  margin-vertical: 10px;
-  width: 100%;
-`;
-
-export const CardBodyItem = styled.View``;
-
-export const CardBodyItemInfo = styled.View`
-  align-items: center;
-  flex-direction: row;
-  width: 60%;
+export const CardBodyItem = styled.View`
+  height: 40px;
+  justify-content: center;
 `;
 
 export const CardBodyItemInfoIconClock = styled.Image.attrs({
@@ -101,7 +89,7 @@ export const CardFooterText = styled.Text`
 
 export const CardHeader = styled.View``;
 
-export const CardProviderProfile = styled.View`
+export const Profile = styled.View`
   align-items: center;
   border-bottom-color: #f2f2f2;
   border-bottom-width: 1px;
@@ -111,7 +99,7 @@ export const CardProviderProfile = styled.View`
   width: 100%;
 `;
 
-export const CardProviderProfileAvatar = styled.Image`
+export const Avatar = styled.Image`
   border-color: #e1eaf5;
   border-radius: 30px;
   border-width: 2px;
@@ -121,14 +109,53 @@ export const CardProviderProfileAvatar = styled.Image`
   width: 60px;
 `;
 
-export const CardProviderProfileInfo = styled.View``;
+export const Divisor = styled.View`
+  background-color: #f2f2f2;
+  height: 1px;
+  width: 100%;
+`;
 
-export const CardProviderProfileNameText = styled.Text`
+export const Info = styled.View``;
+
+export const ItemAddress = styled.View`
+  height: 40px;
+  justify-content: center;
+`;
+
+export const ItemClock = styled.View`
+  height: 40px;
+  justify-content: center;
+`;
+
+export const ShortItemInfo = styled.View`
+  align-items: center;
+  flex-direction: row;
+  width: 60%;
+`;
+
+export const ShortProfileName = styled.Text`
   color: #2a3152;
   font-size: 16px;
 `;
 
-export const CardProviderProfileTitleText = styled.Text`
+export const ShortProfileTitle = styled.Text`
+  color: #2a3152;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+export const LongItemInfo = styled.View`
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+`;
+
+export const LongProfileName = styled.Text`
+  color: #1ec5ea;
+  font-size: 16px;
+`;
+
+export const LongProfileTitle = styled.Text`
   color: #2a3152;
   font-size: 20px;
   font-weight: bold;

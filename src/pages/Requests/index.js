@@ -9,10 +9,12 @@ import {
   Content,
   Empty,
   Appointments,
-  AppointmentsCard,
+  Avatar,
+  Card,
   CardBody,
-  CardBodyDivisor,
-  CardBodyItem,
+  Divisor,
+  ItemAddress,
+  ItemClock,
   CardBodyItemInfo,
   CardBodyItemInfoIconClock,
   CardBodyItemInfoIconNav,
@@ -20,11 +22,14 @@ import {
   CardFooter,
   CardFooterText,
   CardHeader,
-  CardProviderProfile,
-  CardProviderProfileAvatar,
-  CardProviderProfileInfo,
-  CardProviderProfileNameText,
-  CardProviderProfileTitleText,
+  Info,
+  Profile,
+  ShortItemInfo,
+  ShortProfileName,
+  ShortProfileTitle,
+  LongItemInfo,
+  LongProfileName,
+  LongProfileTitle,
 } from './styles';
 
 export default function Requests() {
@@ -58,7 +63,7 @@ export default function Requests() {
   function renderAppointments({ item: appointment }) {
     const { address, customer, detail, id, start_at, status } = appointment;
     const { avatar } = customer;
-    const date = moment(start_at).format('YYYY-MM-DD HH:mm');
+    // const date = moment(start_at).format('YYYY-MM-DD HH:mm');
     const dateShort = moment(start_at).format('DD MMM, dddd');
     const name = `${customer.name} ${customer.lastname}`;
     const title = detail.service.name;
@@ -67,136 +72,36 @@ export default function Requests() {
     switch (expanded) {
       case true: {
         return (
-          <AppointmentsCard expanded onPress={() => handleSelected(id)}>
+          <Card expanded onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <Profile>
+                <Avatar source={avatar} />
+                <Info>
+                  <LongProfileTitle>{title}</LongProfileTitle>
+                  <LongProfileName>{name}</LongProfileName>
+                </Info>
+              </Profile>
             </CardHeader>
 
-            <View style={{ display: expanded ? 'none' : 'flex' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
+            <CardBody>
+              <ItemClock>
+                <LongItemInfo>
+                  <CardBodyItemInfoIconClock />
+                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
+                </LongItemInfo>
+              </ItemClock>
 
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahah</Text>
-                </View>
+              <Divisor />
 
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>hahahaa</Text>
-                </View>
-              </View>
-
-              <View />
-            </View>
+              <ItemAddress>
+                <ShortItemInfo>
+                  <CardBodyItemInfoIconNav />
+                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
+                </ShortItemInfo>
+              </ItemAddress>
+            </CardBody>
 
             <View style={{ display: expanded ? 'flex' : 'none' }}>
-              <View style={{ flexDirection: 'row', height: 35 }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    qqqqqqqqqqqqqqqqqq
-                  </Text>
-                </View>
-
-                <View
-                  style={{ height: 35, justifyContent: 'center', width: 75 }}
-                >
-                  <Text style={{ color: '#000', fontSize: 14 }}>
-                    pppppppppppppppppppppp
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  marginHorizontal: 15,
-                }}
-              />
-
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                  flexDirection: 'row',
-                  maxHeight: 120,
-                }}
-              >
-                <View
-                  style={{
-                    alignItems: 'center',
-                    height: 35,
-                    justifyContent: 'center',
-                    width: 70,
-                  }}
-                />
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingRight: 10,
-                  }}
-                >
-                  <Text
-                    numberOfLines={4}
-                    style={{
-                      color: '#000',
-                      fontSize: 14,
-                      lineHeight: 24,
-                      paddingVertical: 4,
-                    }}
-                  >
-                    uuuuuuuuuuuuuuuuuuuuuuuuuuu
-                  </Text>
-                </View>
-              </View>
-
               <View
                 style={{
                   borderBottomColor: '#CDCDCD',
@@ -219,50 +124,34 @@ export default function Requests() {
 
               <View />
             </View>
-          </AppointmentsCard>
+          </Card>
         );
       }
 
       case false: {
         return (
-          <AppointmentsCard expanded={false} onPress={() => handleSelected(id)}>
+          <Card expanded={false} onPress={() => handleSelected(id)}>
             <CardHeader>
-              <CardProviderProfile>
-                <CardProviderProfileAvatar source={avatar} />
-                <CardProviderProfileInfo>
-                  <CardProviderProfileTitleText>
-                    {title}
-                  </CardProviderProfileTitleText>
-                  <CardProviderProfileNameText>
-                    {name}
-                  </CardProviderProfileNameText>
-                </CardProviderProfileInfo>
-              </CardProviderProfile>
+              <Profile>
+                <Avatar source={avatar} />
+                <Info>
+                  <ShortProfileTitle>{title}</ShortProfileTitle>
+                  <ShortProfileName>{name}</ShortProfileName>
+                </Info>
+              </Profile>
             </CardHeader>
 
             <CardBody>
-              <CardBodyItem>
-                <CardBodyItemInfo>
-                  <CardBodyItemInfoIconClock />
+              <ItemClock>
+                <ShortItemInfo>
+                  <View style={{ alignItems: 'center', width: 60 }}>
+                    <CardBodyItemInfoIconClock />
+                  </View>
                   <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
-              <CardBodyDivisor />
-              <CardBodyItem>
-                <CardBodyItemInfo>
-                  <CardBodyItemInfoIconNav />
-                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
-                </CardBodyItemInfo>
-              </CardBodyItem>
+                </ShortItemInfo>
+              </ItemClock>
             </CardBody>
-
-            <CardFooter
-              onPress={() => handleFooterAction(status)}
-              status={status}
-            >
-              <CardFooterText>{status}</CardFooterText>
-            </CardFooter>
-          </AppointmentsCard>
+          </Card>
         );
       }
 
@@ -274,7 +163,7 @@ export default function Requests() {
 
   return (
     <Container>
-      <Header left="goBack" title="Your appointments" />
+      <Header left="goBack" title="New requests" />
 
       <Content>
         <Appointments
