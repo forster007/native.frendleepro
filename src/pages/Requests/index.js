@@ -5,28 +5,58 @@ import { getRequests } from '~/services/appointments';
 
 import { Header } from '../../components';
 import {
+  ActionButton,
+  ActionButtonText,
+  ValueBlock,
   Container,
   Content,
   Empty,
   Appointments,
   Avatar,
+  AvatarBlock,
   Card,
   CardBody,
+  CardBodyShort,
   Divisor,
   ItemAddress,
+  CardTitle,
+  CardBodyView,
   ItemClock,
+  CardActionFooter,
+  CardDescription,
   CardBodyItemInfo,
   CardBodyItemInfoIconClock,
+  CardBodyItemInfoIconClockShort,
   CardBodyItemInfoIconNav,
   CardBodyItemInfoText,
   CardFooter,
   CardFooterText,
+  CardSubBody,
   CardHeader,
-  Info,
+  ClockBlock,
+  ClockText,
+  IconAddress,
+  IconClock,
+  IconClockBlock,
+  IconClockSubBlock,
+  InfoBlock,
+  InfoData,
+  InfoDataNameLong,
+  InfoDataNameShort,
+  InfoDataTitleLong,
+  InfoDataTitleShort,
+  InfoSubData,
+  InfoSubStar,
+  InfoValue,
+  Item,
   Profile,
+  ProfileInfo,
+  RequestCoin,
+  RequestValue,
   ShortItemInfo,
   ShortProfileName,
   ShortProfileTitle,
+  SubBlock,
   LongItemInfo,
   LongProfileName,
   LongProfileTitle,
@@ -61,10 +91,23 @@ export default function Requests() {
   }, []);
 
   function renderAppointments({ item: appointment }) {
-    const { address, customer, detail, id, start_at, status } = appointment;
+    const {
+      address,
+      customer,
+      detail,
+      finish_at,
+      id,
+      observation,
+      start_at,
+      status,
+      value,
+    } = appointment;
     const { avatar } = customer;
     // const date = moment(start_at).format('YYYY-MM-DD HH:mm');
-    const dateShort = moment(start_at).format('DD MMM, dddd');
+    const dateClockStart = moment(start_at).format('HH');
+    const dateClockFinish = moment(finish_at).format('HH[h]');
+    const dateLong = moment(start_at).format('dddd, MMMM DD');
+    const dateShort = `${dateClockStart} - ${dateClockFinish}`;
     const name = `${customer.name} ${customer.lastname}`;
     const title = detail.service.name;
     const expanded = !!selected.get(id);
@@ -74,56 +117,69 @@ export default function Requests() {
         return (
           <Card expanded onPress={() => handleSelected(id)}>
             <CardHeader>
-              <Profile>
+              <AvatarBlock>
                 <Avatar source={avatar} />
-                <Info>
-                  <LongProfileTitle>{title}</LongProfileTitle>
-                  <LongProfileName>{name}</LongProfileName>
-                </Info>
-              </Profile>
+              </AvatarBlock>
+              <InfoBlock>
+                <InfoData>
+                  <InfoDataTitleLong>{title}</InfoDataTitleLong>
+                  <InfoDataNameLong>{name}</InfoDataNameLong>
+                </InfoData>
+                <InfoValue>
+                  <InfoDataNameShort>$</InfoDataNameShort>
+                  <InfoDataTitleShort>{value}</InfoDataTitleShort>
+                </InfoValue>
+              </InfoBlock>
             </CardHeader>
 
             <CardBody>
-              <ItemClock>
-                <LongItemInfo>
-                  <CardBodyItemInfoIconClock />
-                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
-                </LongItemInfo>
-              </ItemClock>
+              <CardSubBody>
+                <InfoSubData>
+                  <Item>
+                    <IconClockSubBlock>
+                      <IconClock />
+                    </IconClockSubBlock>
+                    <SubBlock>
+                      <ClockBlock>
+                        <ClockText>{dateLong}</ClockText>
+                      </ClockBlock>
+                      <View>
+                        <ClockText>{dateShort}</ClockText>
+                      </View>
+                    </SubBlock>
+                  </Item>
 
-              <Divisor />
+                  <Divisor />
 
-              <ItemAddress>
-                <ShortItemInfo>
-                  <CardBodyItemInfoIconNav />
-                  <CardBodyItemInfoText>{address}</CardBodyItemInfoText>
-                </ShortItemInfo>
-              </ItemAddress>
+                  <Item>
+                    <IconClockSubBlock>
+                      <IconAddress />
+                    </IconClockSubBlock>
+                    <SubBlock>
+                      <ClockBlock>
+                        <ClockText>{address}</ClockText>
+                      </ClockBlock>
+                    </SubBlock>
+                  </Item>
+                </InfoSubData>
+              </CardSubBody>
             </CardBody>
 
-            <View style={{ display: expanded ? 'flex' : 'none' }}>
-              <View
-                style={{
-                  borderBottomColor: '#CDCDCD',
-                  borderBottomWidth: 0.5,
-                }}
-              >
-                <View style={{ paddingHorizontal: 25, paddingTop: 5 }}>
-                  <Text
-                    style={{ color: '#000', fontSize: 16, paddingVertical: 5 }}
-                  >
-                    O que precisa ser feito?
-                  </Text>
-                  <Text
-                    style={{ color: '#000', fontSize: 16, paddingBottom: 20 }}
-                  >
-                    zzzzzzzzzzzzzzzzzzzzz
-                  </Text>
-                </View>
-              </View>
+            <CardBody>
+              <CardBodyView>
+                <CardTitle>What needs to be done:</CardTitle>
+                <CardDescription>{observation}</CardDescription>
+              </CardBodyView>
+            </CardBody>
 
-              <View />
-            </View>
+            <CardActionFooter>
+              <ActionButton>
+                <ActionButtonText>Accept</ActionButtonText>
+              </ActionButton>
+              <ActionButton>
+                <ActionButtonText>Decline</ActionButtonText>
+              </ActionButton>
+            </CardActionFooter>
           </Card>
         );
       }
@@ -132,25 +188,38 @@ export default function Requests() {
         return (
           <Card expanded={false} onPress={() => handleSelected(id)}>
             <CardHeader>
-              <Profile>
+              <AvatarBlock>
                 <Avatar source={avatar} />
-                <Info>
-                  <ShortProfileTitle>{title}</ShortProfileTitle>
-                  <ShortProfileName>{name}</ShortProfileName>
-                </Info>
-              </Profile>
+              </AvatarBlock>
+              <InfoBlock>
+                <InfoData>
+                  <InfoDataTitleShort>{title}</InfoDataTitleShort>
+                  <InfoDataNameShort>{name}</InfoDataNameShort>
+                </InfoData>
+                <InfoValue>
+                  <InfoDataNameShort>$</InfoDataNameShort>
+                  <InfoDataTitleShort>{value}</InfoDataTitleShort>
+                </InfoValue>
+              </InfoBlock>
             </CardHeader>
 
-            <CardBody>
-              <ItemClock>
-                <ShortItemInfo>
-                  <View style={{ alignItems: 'center', width: 60 }}>
-                    <CardBodyItemInfoIconClock />
-                  </View>
-                  <CardBodyItemInfoText>{dateShort}</CardBodyItemInfoText>
-                </ShortItemInfo>
-              </ItemClock>
-            </CardBody>
+            <CardBodyShort>
+              <InfoSubData>
+                <Item>
+                  <IconClockSubBlock>
+                    <IconClock />
+                  </IconClockSubBlock>
+                  <SubBlock>
+                    <ClockBlock>
+                      <ClockText>{dateLong}</ClockText>
+                    </ClockBlock>
+                    <View>
+                      <ClockText>{dateShort}</ClockText>
+                    </View>
+                  </SubBlock>
+                </Item>
+              </InfoSubData>
+            </CardBodyShort>
           </Card>
         );
       }
