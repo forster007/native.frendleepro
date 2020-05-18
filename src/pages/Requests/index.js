@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import moment from 'moment';
-import { getRequests } from '~/services/appointments';
+import { getRequests, updateAppointment } from '~/services/appointments';
 
 import { Header } from '../../components';
 import {
   ActionButton,
   ActionButtonText,
-  ValueBlock,
   Container,
   Content,
   Empty,
@@ -18,26 +17,16 @@ import {
   CardBody,
   CardBodyShort,
   Divisor,
-  ItemAddress,
   CardTitle,
   CardBodyView,
-  ItemClock,
   CardActionFooter,
   CardDescription,
-  CardBodyItemInfo,
-  CardBodyItemInfoIconClock,
-  CardBodyItemInfoIconClockShort,
-  CardBodyItemInfoIconNav,
-  CardBodyItemInfoText,
-  CardFooter,
-  CardFooterText,
   CardSubBody,
   CardHeader,
   ClockBlock,
   ClockText,
   IconAddress,
   IconClock,
-  IconClockBlock,
   IconClockSubBlock,
   InfoBlock,
   InfoData,
@@ -46,20 +35,9 @@ import {
   InfoDataTitleLong,
   InfoDataTitleShort,
   InfoSubData,
-  InfoSubStar,
   InfoValue,
   Item,
-  Profile,
-  ProfileInfo,
-  RequestCoin,
-  RequestValue,
-  ShortItemInfo,
-  ShortProfileName,
-  ShortProfileTitle,
   SubBlock,
-  LongItemInfo,
-  LongProfileName,
-  LongProfileTitle,
 } from './styles';
 
 export default function Requests() {
@@ -67,16 +45,62 @@ export default function Requests() {
   const [requests, setRequests] = useState([]);
   const [selected, setSelected] = useState(new Map());
 
-  const handleFooterAction = useCallback(status => {
-    console.log(status);
-  });
-
   const handleRequests = useCallback(async () => {
     setLoading(true);
     const { data } = await getRequests();
 
     setLoading(false);
     setRequests(data);
+  });
+
+  const handleFooterAction = useCallback((action, appointment) => {
+    switch (action) {
+      case 'cancel': {
+        const obj = {
+          appointment_id: appointment.id,
+          status: 'canceled',
+        };
+
+        Alert.alert(
+          'WARNING',
+          'Do you really want to cancel this appointment?',
+          [
+            {
+              text: 'OK',
+              onPress: () => updateAppointment(obj),
+            },
+            { text: 'Cancel', onPress: () => console.log('Done') },
+          ],
+          { cancelable: false }
+        );
+        break;
+      }
+
+      case 'confirmed': {
+        const obj = {
+          appointment_id: appointment.id,
+          status: 'confirmed',
+        };
+
+        Alert.alert(
+          'WARNING',
+          'Do you really want to accept this appointment?',
+          [
+            {
+              text: 'OK',
+              onPress: () => updateAppointment(obj),
+            },
+            { text: 'Cancel', onPress: () => console.log('Done') },
+          ],
+          { cancelable: false }
+        );
+        break;
+      }
+
+      default: {
+        console.log('No action');
+      }
+    }
   });
 
   const handleSelected = useCallback(id => {
@@ -89,6 +113,31 @@ export default function Requests() {
   useEffect(() => {
     handleRequests();
   }, []);
+
+  function renderCardActions(appointment) {
+    switch (appointment.status) {
+      case 'opened': {
+        return (
+          <>
+            <ActionButton
+              onPress={() => handleFooterAction('confirmed', appointment)}
+            >
+              <ActionButtonText>Accept</ActionButtonText>
+            </ActionButton>
+            <ActionButton
+              onPress={() => handleFooterAction('cancel', appointment)}
+            >
+              <ActionButtonText>Decline</ActionButtonText>
+            </ActionButton>
+          </>
+        );
+      }
+
+      default: {
+        return null;
+      }
+    }
+  }
 
   function renderAppointments({ item: appointment }) {
     const {
@@ -173,12 +222,7 @@ export default function Requests() {
             </CardBody>
 
             <CardActionFooter>
-              <ActionButton>
-                <ActionButtonText>Accept</ActionButtonText>
-              </ActionButton>
-              <ActionButton>
-                <ActionButtonText>Decline</ActionButtonText>
-              </ActionButton>
+              {renderCardActions(appointment)}
             </CardActionFooter>
           </Card>
         );
