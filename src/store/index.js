@@ -7,7 +7,7 @@ import rootReducer from './modules/rootReducer';
 import rootSaga from './modules/rootSaga';
 
 const persistConfig = {
-  key: 'E',
+  key: 'BBBB',
   storage: AsyncStorage,
   whitelist: ['auth'],
 };

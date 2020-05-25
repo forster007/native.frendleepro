@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
 import auth from './auth/reducer';
-import providers from './providers/reducer';
+import websocket from './websocket/reducer';
 
 export default combineReducers({
   auth,
-  providers,
+  websocket,
 });

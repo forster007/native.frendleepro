@@ -1,19 +1,24 @@
 import { Platform, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
 import styled from 'styled-components/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 export const Container = styled.View`
   align-items: center;
-  background-color: #fff;
-  border-bottom-color: #f2f2f2;
+  background-color: ${({ background }) => background || '#fff'};
+  border-bottom-color: ${({ background }) => background || '#f2f2f2'};
   border-bottom-width: 1px;
-  elevation: 5;
+  elevation: ${({ background }) => (background ? '0' : '5')};
   flex-direction: row;
   justify-content: space-between;
   height: ${Platform.OS === 'ios' ? Constants.statusBarHeight + 54 : 54}px;
   padding-horizontal: 20px;
   padding-top: ${Platform.OS === 'ios' ? Constants.statusBarHeight : 0}px;
+`;
+
+export const CloseIcon = styled(AntDesign)`
+  font-size: 24px;
+  color: ${({ color }) => color || '#ffffff'};
 `;
 
 export const InfoIcon = styled(FontAwesome)`
@@ -30,11 +35,14 @@ export const InfoIconButton = styled(TouchableOpacity).attrs({
   },
 })`
   align-items: ${({ align }) => align || 'flex-start'};
-  width: 15%;
+  width: 10%;
 `;
 
 export const Title = styled.Text`
   color: #003b6f;
   font-size: 22px;
   font-weight: bold;
+  text-align: ${({ align }) => align || 'center'};
+  top: 2px;
+  width: 80%;
 `;

@@ -1,10 +1,13 @@
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, StatusBar, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import moment from 'moment';
+import { Header, Modal } from '../../components';
 import { getAppointments } from '~/services/appointments';
 import { storeOnesignal } from '~/services/onesignal';
+import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,
   ActionButtonText,
@@ -41,15 +44,54 @@ import {
   Item,
   SubBlock,
 } from './styles';
-import { Header } from '../../components';
 
 export default function Schedule({ navigation }) {
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState(new Map());
 
-  const handleFooterAction = useCallback(status => {
-    console.log(status);
+  const handleAppointments = useCallback(async () => {
+    setLoading(true);
+
+    const { data } = await getAppointments();
+
+    dispatch(messagesRequest());
+    setAppointments(data);
+    setLoading(false);
+  });
+
+  const handleFooterAction = useCallback((action, appointment) => {
+    switch (action) {
+      case 'cancel': {
+        const obj = {
+          appointment_id: appointment.id,
+          status: 'canceled',
+        };
+
+        Alert.alert(
+          'WARNING',
+          'Do you really want to cancel this appointment?',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                updateAppointments(obj);
+                handleAppointments();
+              },
+            },
+            { text: 'Cancel', onPress: () => console.log('Done') },
+          ],
+          { cancelable: false }
+        );
+        break;
+      }
+
+      default: {
+        console.log('No action');
+      }
+    }
   });
 
   const handleNotification = useCallback(data => {
@@ -67,14 +109,6 @@ export default function Schedule({ navigation }) {
 
     const onesignal = await Notifications.getExpoPushTokenAsync();
     await storeOnesignal({ onesignal });
-  });
-
-  const handleAppointments = useCallback(async () => {
-    setLoading(true);
-    const { data } = await getAppointments();
-
-    setLoading(false);
-    setAppointments(data);
   });
 
   const handleSelected = useCallback(id => {
@@ -97,17 +131,30 @@ export default function Schedule({ navigation }) {
     };
   }, []);
 
-  function renderCardActions(status) {
-    console.log(status);
-    switch (status) {
+  useEffect(() => {
+    if (modalVisible) {
+      setTimeout(() => {
+        StatusBar.setBarStyle('light-content');
+      }, 300);
+    } else {
+      StatusBar.setBarStyle('dark-content');
+    }
+  }, [modalVisible]);
+
+  function renderCardActions(appointment) {
+    switch (appointment.status) {
       case 'confirmed':
       case 'payed': {
         return (
           <>
-            <ActionButton>
+            <ActionButton
+              onPress={() => navigation.navigate('Chat', { appointment })}
+            >
               <ActionButtonText>Message</ActionButtonText>
             </ActionButton>
-            <ActionButton>
+            <ActionButton
+              onPress={() => handleFooterAction('cancel', appointment)}
+            >
               <ActionButtonText>Cancel</ActionButtonText>
             </ActionButton>
           </>
@@ -212,7 +259,9 @@ export default function Schedule({ navigation }) {
               </CardBodyView>
             </CardBody>
 
-            <CardActionFooter>{renderCardActions(status)}</CardActionFooter>
+            <CardActionFooter>
+              {renderCardActions(appointment)}
+            </CardActionFooter>
 
             <CardFooter status={status}>
               <CardFooterText>{status}</CardFooterText>
@@ -282,7 +331,14 @@ export default function Schedule({ navigation }) {
 
   return (
     <Container>
-      <Header right="menu" title="Your appointments" />
+      <Modal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <Header
+        left="profile"
+        right="menu"
+        rightFunction={setModalVisible}
+        rightProps={modalVisible}
+        title="Your appointments"
+      />
 
       <Content>
         <Appointments

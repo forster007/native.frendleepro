@@ -2,8 +2,9 @@ import types from './types';
 
 const INITIAL_STATE = {
   loading: false,
-  signed: null,
-  token: null,
+  signed: false,
+  token: '',
+  user: {},
 };
 
 export default function auth(state = INITIAL_STATE, action) {
@@ -16,6 +17,7 @@ export default function auth(state = INITIAL_STATE, action) {
         loading: false,
         signed: true,
         token: action.payload.token,
+        user: action.payload.user,
       };
 
     case types.SIGN_IN_FAILURE:
