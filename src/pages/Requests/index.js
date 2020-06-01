@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 import moment from 'moment';
-import { getRequests, updateAppointment } from '~/services/appointments';
+import { getRequests, updateAppointments } from '~/services/appointments';
 
 import { Header } from '../../components';
 import {
@@ -47,6 +47,7 @@ export default function Requests() {
 
   const handleRequests = useCallback(async () => {
     setLoading(true);
+
     const { data } = await getRequests();
 
     setLoading(false);
@@ -56,10 +57,7 @@ export default function Requests() {
   const handleFooterAction = useCallback((action, appointment) => {
     switch (action) {
       case 'cancel': {
-        const obj = {
-          appointment_id: appointment.id,
-          status: 'canceled',
-        };
+        const obj = { appointment_id: appointment.id, status: 'canceled' };
 
         Alert.alert(
           'WARNING',
@@ -67,7 +65,10 @@ export default function Requests() {
           [
             {
               text: 'OK',
-              onPress: () => updateAppointment(obj),
+              onPress: async () => {
+                await updateAppointments(obj);
+                await handleRequests();
+              },
             },
             { text: 'Cancel', onPress: () => console.log('Done') },
           ],
@@ -77,10 +78,7 @@ export default function Requests() {
       }
 
       case 'confirmed': {
-        const obj = {
-          appointment_id: appointment.id,
-          status: 'confirmed',
-        };
+        const obj = { appointment_id: appointment.id, status: 'confirmed' };
 
         Alert.alert(
           'WARNING',
@@ -88,7 +86,10 @@ export default function Requests() {
           [
             {
               text: 'OK',
-              onPress: () => updateAppointment(obj),
+              onPress: async () => {
+                await updateAppointments(obj);
+                await handleRequests();
+              },
             },
             { text: 'Cancel', onPress: () => console.log('Done') },
           ],
@@ -287,7 +288,7 @@ export default function Requests() {
           refreshing={loading}
           renderItem={renderAppointments}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<Empty>No Appointments available.</Empty>}
+          ListEmptyComponent={<Empty>No requests available</Empty>}
         />
       </Content>
     </Container>

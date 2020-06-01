@@ -204,7 +204,9 @@ export const CardHeader = styled.View`
 
 export const ClockBlock = styled.View``;
 
-export const ClockText = styled.Text.attrs({ numberOfLines: 5 })`
+export const ClockText = styled.Text.attrs(props => ({
+  numberOfLines: props.short ? 1 : 5,
+}))`
   color: #33658a;
   font-size: 16px;
   font-weight: 600;
@@ -327,10 +329,10 @@ export const CardTitle = styled.Text`
   font-weight: bold;
 `;
 
-export const CardDescription = styled.Text.attrs({ numberOfLines: 4 })`
+export const CardDescription = styled.Text.attrs({ numberOfLines: 7 })`
   color: #33658a;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   padding-top: 10px;
   text-align: justify;
 `;

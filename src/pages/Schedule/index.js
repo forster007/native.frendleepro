@@ -2,6 +2,7 @@ import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, StatusBar, View } from 'react-native';
+import { withNavigationFocus } from 'react-navigation';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { Header, Modal } from '../../components';
@@ -45,14 +46,16 @@ import {
   SubBlock,
 } from './styles';
 
-export default function Schedule({ navigation }) {
+function Schedule({ isFocused, navigation }) {
   const dispatch = useDispatch();
   const [appointments, setAppointments] = useState([]);
+  const [firstLoad, setFirstLoad] = useState(true);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState(new Map());
 
   const handleAppointments = useCallback(async () => {
+    setFirstLoad(false);
     setLoading(true);
 
     const { data } = await getAppointments();
@@ -132,6 +135,10 @@ export default function Schedule({ navigation }) {
   }, []);
 
   useEffect(() => {
+    if (isFocused && !firstLoad) handleAppointments();
+  }, [isFocused]);
+
+  useEffect(() => {
     if (modalVisible) {
       setTimeout(() => {
         StatusBar.setBarStyle('light-content');
@@ -146,7 +153,7 @@ export default function Schedule({ navigation }) {
       case 'confirmed':
       case 'payed': {
         return (
-          <>
+          <CardActionFooter>
             <ActionButton
               onPress={() => navigation.navigate('Chat', { appointment })}
             >
@@ -157,17 +164,39 @@ export default function Schedule({ navigation }) {
             >
               <ActionButtonText>Cancel</ActionButtonText>
             </ActionButton>
-          </>
+          </CardActionFooter>
         );
+      }
+
+      case 'finished': {
+        if (appointment.provider_rating === false) {
+          return (
+            <CardActionFooter>
+              <ActionButton
+                onPress={() =>
+                  navigation.navigate('ScheduleDetail', { appointment })
+                }
+              >
+                <ActionButtonText>Rate treatment</ActionButtonText>
+              </ActionButton>
+            </CardActionFooter>
+          );
+        }
+
+        return null;
       }
 
       case 'started': {
         return (
-          <>
-            <ActionButton>
-              <ActionButtonText>Finish treatment</ActionButtonText>
+          <CardActionFooter>
+            <ActionButton
+              onPress={() =>
+                navigation.navigate('ScheduleDetail', { appointment })
+              }
+            >
+              <ActionButtonText>Treatment detail</ActionButtonText>
             </ActionButton>
-          </>
+          </CardActionFooter>
         );
       }
 
@@ -185,12 +214,13 @@ export default function Schedule({ navigation }) {
       finish_at,
       id,
       observation,
+      provider_rating,
       start_at,
+      started_at,
       status,
       value,
     } = appointment;
     const { avatar } = customer;
-    // const date = moment(start_at).format('YYYY-MM-DD HH:mm');
     const dateClockStart = moment(start_at).format('HH');
     const dateClockFinish = moment(finish_at).format('HH[h]');
     const dateLong = moment(start_at).format('dddd, MMMM DD');
@@ -198,6 +228,34 @@ export default function Schedule({ navigation }) {
     const name = `${customer.name} ${customer.lastname}`;
     const title = detail.service.name;
     const expanded = !!selected.get(id);
+
+    let statusText = '';
+
+    switch (status) {
+      case 'confirmed':
+        statusText = 'Waiting payment';
+        break;
+
+      case 'finished': {
+        statusText = provider_rating === false ? 'Waiting rating' : 'FINISHED';
+        break;
+      }
+
+      case 'opened':
+        statusText = 'Waiting confirmation';
+        break;
+
+      case 'payed':
+        statusText = 'Waiting start';
+        break;
+
+      case 'started':
+        statusText = `Started ${moment(started_at).fromNow()}`;
+        break;
+
+      default:
+        statusText = status;
+    }
 
     switch (expanded) {
       case true: {
@@ -259,12 +317,10 @@ export default function Schedule({ navigation }) {
               </CardBodyView>
             </CardBody>
 
-            <CardActionFooter>
-              {renderCardActions(appointment)}
-            </CardActionFooter>
+            {renderCardActions(appointment)}
 
             <CardFooter status={status}>
-              <CardFooterText>{status}</CardFooterText>
+              <CardFooterText>{statusText}</CardFooterText>
             </CardFooter>
           </Card>
         );
@@ -309,7 +365,7 @@ export default function Schedule({ navigation }) {
                   </IconClockSubBlock>
                   <SubBlock>
                     <ClockBlock>
-                      <ClockText>{address}</ClockText>
+                      <ClockText short>{address}</ClockText>
                     </ClockBlock>
                   </SubBlock>
                 </Item>
@@ -317,7 +373,7 @@ export default function Schedule({ navigation }) {
             </CardBody>
 
             <CardFooter status={status}>
-              <CardFooterText>{status}</CardFooterText>
+              <CardFooterText>{statusText}</CardFooterText>
             </CardFooter>
           </Card>
         );
@@ -349,9 +405,11 @@ export default function Schedule({ navigation }) {
           refreshing={loading}
           renderItem={renderAppointments}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<Empty>No Appointments available.</Empty>}
+          ListEmptyComponent={<Empty>No appointments available</Empty>}
         />
       </Content>
     </Container>
   );
 }
+
+export default withNavigationFocus(Schedule);

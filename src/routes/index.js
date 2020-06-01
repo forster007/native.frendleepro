@@ -11,7 +11,7 @@ import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
 import Chat from '~/pages/Chat';
 import Schedule from '~/pages/Schedule';
 import Requests from '~/pages/Requests';
-import ScheduleDetails from '~/pages/ScheduleDetails';
+import ScheduleDetail from '~/pages/ScheduleDetail';
 
 const SignStack = createStackNavigator(
   {
@@ -62,7 +62,7 @@ const AppStack = createStackNavigator(
   {
     AppTabs,
     Chat,
-    ScheduleDetails,
+    ScheduleDetail,
   },
   {
     headerMode: 'none',

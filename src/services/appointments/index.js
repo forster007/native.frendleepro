@@ -4,7 +4,7 @@ export function getAppointments() {
   return api.get('/appointments?operation=not&status=opened');
 }
 
-export function updateAppointment(obj) {
+export function updateAppointments(obj) {
   return api.put(`/appointments/${obj.appointment_id}`, obj);
 }
 

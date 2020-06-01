@@ -327,7 +327,7 @@ export const CardTitle = styled.Text`
   font-weight: bold;
 `;
 
-export const CardDescription = styled.Text.attrs({ numberOfLines: 4 })`
+export const CardDescription = styled.Text.attrs({ numberOfLines: 7 })`
   color: #33658a;
   font-size: 16px;
   font-weight: 400;
