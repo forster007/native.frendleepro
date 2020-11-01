@@ -39,9 +39,9 @@ export default function Header({
         return (
           <InfoIconButton
             align="flex-start"
-            onPress={() => dispatch(signOutRequest())}
+            onPress={() => NavigationService.navigate('Profile')}
           >
-            <InfoIcon name="cogs" />
+            <InfoIcon name="user-circle" />
           </InfoIconButton>
         );
       }
