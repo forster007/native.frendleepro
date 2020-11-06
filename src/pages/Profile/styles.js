@@ -250,7 +250,7 @@ export const ProfileCardInfoPetFrendlyIcon = styled(
 `;
 
 export const ProfileCardInfoFacebookIcon = styled(FontAwesome).attrs({
-  color: '#1EC5EA',
+  color: '#1EC5EA50',
   name: 'facebook',
   size: 30,
 })`
@@ -260,7 +260,7 @@ export const ProfileCardInfoFacebookIcon = styled(FontAwesome).attrs({
 `;
 
 export const ProfileCardInfoInstagramIcon = styled(FontAwesome).attrs({
-  color: '#1EC5EA',
+  color: '#1EC5EA50',
   name: 'instagram',
   size: 30,
 })`
@@ -371,4 +371,6 @@ export const ProfileCardStuffText = styled.Text`
   margin: 0 15px;
 `;
 
-export const ProfileStuffsFlatList = styled.FlatList``;
+export const ProfileStuffsFlatList = styled.FlatList`
+  padding-bottom: 15px;
+`;

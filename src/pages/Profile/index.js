@@ -3,6 +3,7 @@ import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Header } from '~/components';
+import {SafeAreaView} from 'react-native';
 import {
   Container,
   Content,
@@ -47,21 +48,19 @@ import {
   ProfileCardEspecialization,
 } from './styles';
 
-import { getProvider } from '~/services/providers';
+import { getProviders } from '~/services/providers';
 
 function Profile({ isFocused, navigation }) {
   const { user, token } = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [monthsOnFrenndlee, setMonthsOnFrenndlee] = useState('');
+  const [monthsOnFrendlee, setMonthsOnFrendlee] = useState('');
   const [profile, setProfile] = useState({});
 
   const handleProfile = useCallback(async () => {
-    const response = await getProvider(user.uid, token);
-
-    // setProfile(response.data);
-    setProfile(response.data[2]);
-    console.log(response.data[2]);
+    const response = await getProviders();
+    setProfile(response.data);
+    //console.log(response.data);
   });
 
   useEffect(() => {
@@ -71,7 +70,7 @@ function Profile({ isFocused, navigation }) {
   useEffect(() => {
     setName(`${profile.name} ${profile.lastname}`);
     setAge(`${moment().diff(profile.birthdate, 'years')} years old`);
-    setMonthsOnFrenndlee(`${moment().diff(profile.created_at, 'months')}`);
+    setMonthsOnFrendlee(`${moment().diff(profile.created_at, 'months')}`);
   }, [profile]);
 
   function renderStuff({ item }) {
@@ -88,18 +87,14 @@ function Profile({ isFocused, navigation }) {
         <ProfileCardBiography>
           <ProfileCardBiographyTitle>Biography</ProfileCardBiographyTitle>
           <ProfileCardBiographyText>
-            Blue bottle crucifix banh mi, echo park bicycle rights godard YOLO
-            XOXO hella hashtag green juice narwhal PBR&B. Freegan woke cliche,
-            vaporware locavore shabby chic copper mug butcher pabst seitan
-            cold-pressed. Hella sustainable viral church-key helvetica.
-            {profile.biography}
+            {profile.description}
           </ProfileCardBiographyText>
         </ProfileCardBiography>
 
         <ProfileCardInformation>
           <ProfileCardInformationSsnIcon />
           <ProfileCardInformationText>
-            {profile.ssn}6188354557
+            {profile.ssn}
           </ProfileCardInformationText>
         </ProfileCardInformation>
 
@@ -112,7 +107,7 @@ function Profile({ isFocused, navigation }) {
           <ProfileCardInfoPhone>
             <ProfileCardInfoPhoneIcon />
             <ProfileCardInfoPhoneText>
-              {profile.phone_number}995884384
+              {profile.phone_number}
             </ProfileCardInfoPhoneText>
           </ProfileCardInfoPhone>
 
@@ -148,9 +143,9 @@ function Profile({ isFocused, navigation }) {
 
         <ProfileCardInfo>
           <ProfileCardAtLeft>
-            <ProfileCardInfoInstagramIcon onPress={() => {}} />
+            <ProfileCardInfoInstagramIcon onPress={() => { }} />
             <ProfileHalfCardInfoText>•</ProfileHalfCardInfoText>
-            <ProfileCardInfoFacebookIcon onPress={() => {}} />
+            <ProfileCardInfoFacebookIcon onPress={() => { }} />
           </ProfileCardAtLeft>
         </ProfileCardInfo>
 
@@ -159,19 +154,19 @@ function Profile({ isFocused, navigation }) {
         <ProfileCardInfoRating>
           <ProfileCardRating>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>43{profile.attendance}</ProfileCardRatingText>
+              <ProfileCardRatingText>{profile.treatments}</ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Pessoas Atendidas
               </ProfileCardRatingTextDown>
             </ProfileCardRatingItem>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>39{profile.recommendations}</ProfileCardRatingText>
+              <ProfileCardRatingText>{profile.stars}</ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Recomendações super positivas
               </ProfileCardRatingTextDown>
             </ProfileCardRatingItem>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>9{monthsOnFrenndlee}</ProfileCardRatingText>
+              <ProfileCardRatingText>{monthsOnFrendlee}</ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Meses na plataforma
               </ProfileCardRatingTextDown>
@@ -188,12 +183,15 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <ProfileStuffsFlatList
+        <SafeAreaView style={{flex: 1}}>
+          <ProfileStuffsFlatList
           data={profile.stuffs}
           keyExtractor={item => item.id}
           renderItem={renderStuff}
           ListEmptyComponent={<Div />}
         />
+        </SafeAreaView>
+
       </Div>
     );
   }
