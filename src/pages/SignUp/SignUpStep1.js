@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -226,52 +227,150 @@ export default function SignUpStep1({ navigation }) {
     );
   });
 
+  const handleInput = e => {
+    switch (e) {
+      case 'bsn':
+        return 'You forgot to fill in the BSN';
+      case 'pictureAddress':
+        return 'You forgot to fill in the Address Picture';
+      case 'pictureLicense':
+        return 'You forgot to fill in the License Picture';
+      case 'pictureProfile':
+        return 'You forgot to fill in the Profile Picture';
+      case 'birthdate':
+        return 'You forgot to fill in the Birthdate';
+      case 'gender':
+        return 'You forgot to fill in the Gender';
+      case 'email':
+        return 'You forgot to fill in the Email';
+      case 'name':
+        return 'You forgot to fill in the Name';
+      case 'lastname':
+        return 'You forgot to fill in the Lastname';
+      case 'phone':
+        return 'You forgot to fill in the Phone';
+      case 'validBsn':
+        return 'Your BSN is invalid';
+      case 'validEmail':
+        return 'Your EMAIL is invalid';
+      case 'validPhone':
+        return 'Your PHONE is invalid';
+      case 'postalCode':
+        return 'You forgot to fill in the Postal Code';
+      case 'street':
+        return 'You forgot to fill in the Street';
+      case 'number':
+        return 'You forgot to fill in the Number';
+      case 'district':
+        return 'You forgot to fill in the District';
+      case 'city':
+        return 'You forgot to fill in the City';
+      case 'state':
+        return 'You forgot to fill in the State';
+      default:
+        return 'You forgot to fill some field';
+    }
+  };
+
   const handleNext = useCallback(() => {
-    const filenamePictureAddress = pictureAddress.split('/').pop();
-    const filenamePictureLicense = pictureLicense.split('/').pop();
-    const filenamePictureProfile = pictureProfile.split('/').pop();
+    if (
+      pictureAddress &&
+      pictureLicense &&
+      pictureProfile &&
+      birthdate &&
+      bsn &&
+      gender &&
+      email &&
+      name &&
+      lastname &&
+      phone &&
+      validBsn &&
+      validEmail &&
+      validPhone &&
+      postalCode &&
+      street &&
+      number &&
+      district &&
+      city &&
+      state
+    ) {
+      const filenamePictureAddress = pictureAddress.split('/').pop();
+      const filenamePictureLicense = pictureLicense.split('/').pop();
+      const filenamePictureProfile = pictureProfile.split('/').pop();
 
-    const data = {
-      birthdate: `${birthdate}T00:00:00-03:00`,
-      gender,
-      lastname,
-      name,
-      phone_number: phone,
-      phone_number_is_whatsapp: true,
-      ssn: bsn,
-      user: {
-        account_type,
-        email,
-        status,
-      },
-      picture_address: {
-        uri: pictureAddress,
-        name: filenamePictureAddress,
-        type: 'image/jpg',
-      },
-      picture_license: {
-        uri: pictureLicense,
-        name: filenamePictureLicense,
-        type: 'image/jpg',
-      },
-      picture_profile: {
-        uri: pictureProfile,
-        name: filenamePictureProfile,
-        type: 'image/jpg',
-      },
-      address: {
-        postal_code: postalCode,
-        street,
-        number,
-        complement,
-        district,
-        city,
-        state,
-        country,
-      },
-    };
+      const data = {
+        birthdate: `${birthdate}T00:00:00-03:00`,
+        gender,
+        lastname,
+        name,
+        phone_number: phone,
+        phone_number_is_whatsapp: true,
+        ssn: bsn,
+        user: {
+          account_type,
+          email,
+          status,
+        },
+        picture_address: {
+          uri: pictureAddress,
+          name: filenamePictureAddress,
+          type: 'image/jpg',
+        },
+        picture_license: {
+          uri: pictureLicense,
+          name: filenamePictureLicense,
+          type: 'image/jpg',
+        },
+        picture_profile: {
+          uri: pictureProfile,
+          name: filenamePictureProfile,
+          type: 'image/jpg',
+        },
+        address: {
+          postal_code: postalCode,
+          street,
+          number,
+          complement,
+          district,
+          city,
+          state,
+          country,
+        },
+      };
 
-    navigation.navigate('SignUpStep2', { data });
+      navigation.navigate('SignUpStep2', { data });
+    } else {
+      const items = [
+        { state: bsn, string: 'bsn' },
+        { state: validBsn, string: 'validBsn' },
+        { state: pictureLicense, string: 'pictureLicense' },
+        { state: pictureProfile, string: 'pictureProfile' },
+        { state: name, string: 'name' },
+        { state: lastname, string: 'lastname' },
+        { state: email, string: 'email' },
+        { state: validEmail, string: 'validEmail' },
+        { state: phone, string: 'phone' },
+        { state: validPhone, string: 'validPhone' },
+        { state: birthdate, string: 'birthdate' },
+        { state: gender, string: 'gender' },
+        { state: pictureAddress, string: 'pictureAddress' },
+        { state: postalCode, string: 'postalCode' },
+        { state: number, string: 'number' },
+        { state: street, string: 'street' },
+        { state: district, string: 'district' },
+        { state: city, string: 'city' },
+        { state, string: 'state' },
+      ];
+
+      _.forEach(items, item => {
+        if (item.state === '' || item.state === false) {
+          Alert.alert('WARNING', handleInput(item.string));
+          return false;
+        }
+
+        return true;
+      });
+    }
   });
 
   const handlePhone = useCallback(async () => {
@@ -309,52 +408,6 @@ export default function SignUpStep1({ navigation }) {
       setValidPhone(false);
     }
   }, [phone, validPhone]);
-
-  useEffect(() => {
-    if (
-      pictureAddress &&
-      pictureLicense &&
-      pictureProfile &&
-      birthdate &&
-      gender &&
-      email &&
-      name &&
-      lastname &&
-      phone &&
-      validBsn &&
-      validEmail &&
-      validPhone &&
-      postalCode &&
-      street &&
-      number &&
-      district &&
-      city &&
-      state
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
-    }
-  }, [
-    pictureAddress,
-    pictureLicense,
-    pictureProfile,
-    birthdate,
-    gender,
-    email,
-    name,
-    lastname,
-    phone,
-    validBsn,
-    validEmail,
-    validPhone,
-    postalCode,
-    street,
-    number,
-    district,
-    city,
-    state,
-  ]);
 
   return (
     <Container>
@@ -647,7 +700,7 @@ export default function SignUpStep1({ navigation }) {
           <Divisor />
 
           <Div direction="column" marginBottom>
-            <ButtonNext state={buttonState} onPress={handleNext}>
+            <ButtonNext state onPress={handleNext}>
               <ButtonNextText>NEXT STEP</ButtonNextText>
             </ButtonNext>
           </Div>
