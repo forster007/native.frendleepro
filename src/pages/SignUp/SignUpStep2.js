@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Platform, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -149,28 +150,70 @@ export default function SignUpStep2({ navigation }) {
     );
   });
 
-  const handleNext = useCallback(() => {
-    const data = navigation.getParam('data');
-
-    if (pictureCertification) {
-      const filenamePictureCertification = pictureCertification
-        .split('/')
-        .pop();
-      data.picture_certification = {
-        uri: pictureCertification,
-        name: filenamePictureCertification,
-        type: 'image/jpg',
-      };
+  const handleInput = e => {
+    switch (e) {
+      case 'clocksCheckeds':
+        return 'You need to fill at least one Availability Clock';
+      case 'periodsCheckeds':
+        return 'You need to fill at least one Availability Period';
+      case 'servicesCheckeds':
+        return 'You need to fill at least one Service to Provide';
+      case 'stuffsCheckeds':
+        return 'You need to fill at least one Stuff';
+      default:
+        return 'You forgot to fill some field';
     }
+  };
 
-    data.formation = ocupation;
-    data.is_medical_provider = checked;
-    data.provider_clocks = clocksCheckeds;
-    data.provider_periods = periodsCheckeds;
-    data.provider_services = servicesCheckeds;
-    data.provider_stuffs = stuffsCheckeds;
+  const handleNext = useCallback(() => {
+    if (
+      clocksCheckeds &&
+      periodsCheckeds &&
+      servicesCheckeds.length >= 1 &&
+      stuffsCheckeds.length >= 1
+    ) {
+      const data = navigation.getParam('data');
 
-    navigation.navigate('SignUpStep3', { data });
+      if (pictureCertification) {
+        const filenamePictureCertification = pictureCertification
+          .split('/')
+          .pop();
+        data.picture_certification = {
+          uri: pictureCertification,
+          name: filenamePictureCertification,
+          type: 'image/jpg',
+        };
+      }
+
+      data.formation = ocupation;
+      data.is_medical_provider = checked;
+      data.provider_clocks = clocksCheckeds;
+      data.provider_periods = periodsCheckeds;
+      data.provider_services = servicesCheckeds;
+      data.provider_stuffs = stuffsCheckeds;
+
+      navigation.navigate('SignUpStep3', { data });
+    } else {
+      const items = [
+        { state: servicesCheckeds, string: 'servicesCheckeds' },
+        { state: stuffsCheckeds, string: 'stuffsCheckeds' },
+        { state: clocksCheckeds, string: 'clocksCheckeds' },
+        { state: periodsCheckeds, string: 'periodsCheckeds' },
+      ];
+
+      _.forEach(items, item => {
+        if (
+          item.state === '' ||
+          item.state === undefined ||
+          item.state.length === 0
+        ) {
+          Alert.alert('WARNING', handleInput(item.string));
+          return false;
+        }
+
+        return true;
+      });
+    }
   });
 
   const checkClock = clock_id => {
@@ -293,9 +336,7 @@ export default function SignUpStep2({ navigation }) {
               width={Platform.OS === 'android' ? '20%' : '30%'}
             >
               <BodyText size="20px">
-                R$
-                {servicesCheckeds.find(e => e.service_id === id).value}
-                ,00
+                € {servicesCheckeds.find(e => e.service_id === id).value},00
               </BodyText>
             </Div>
           </Div>
@@ -321,19 +362,6 @@ export default function SignUpStep2({ navigation }) {
       </Div>
     ));
   };
-
-  useEffect(() => {
-    if (
-      clocksCheckeds &&
-      periodsCheckeds &&
-      servicesCheckeds.length >= 1 &&
-      stuffsCheckeds.length >= 1
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
-    }
-  }, [clocksCheckeds, periodsCheckeds, servicesCheckeds, stuffsCheckeds]);
 
   return (
     <Container>
@@ -420,7 +448,7 @@ export default function SignUpStep2({ navigation }) {
           <Divisor />
 
           <Div marginBotton style={{ marginBottom: 20 }}>
-            <ButtonNext state={buttonState} onPress={handleNext}>
+            <ButtonNext state onPress={handleNext}>
               <ButtonNextText>NEXT STEP</ButtonNextText>
             </ButtonNext>
           </Div>
