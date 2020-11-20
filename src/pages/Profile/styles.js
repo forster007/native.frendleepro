@@ -384,7 +384,7 @@ export const ButtonEdit = styled(TouchableOpacity)`
   align-items: center;
   justify-content: center;
   align-content: center;
-  border: 2px solid #7244d4;
+  border: 2px solid #16b8dc;
   border-radius: 4px;
   height: 42px;
   justify-content: center;
@@ -392,11 +392,28 @@ export const ButtonEdit = styled(TouchableOpacity)`
 `;
 
 export const ButtonEditText = styled.Text`
-  color: #7244d4;
+  color: #16b8dc;
   font-size: 20px;
   font-weight: bold;
 `;
 
+export const ButtonEditService = styled(TouchableOpacity)`
+  flex: 1;
+  background-color: #16b8dc;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  border-radius: 4px;
+  height: 42px;
+  justify-content: center;
+  width: ${screenWidth - 20}px;
+`;
+
+export const ButtonEditServiceText = styled.Text`
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+`;
 export const ButtonEditDiv = styled.View`
   align-items: center;
   flex-direction: row;

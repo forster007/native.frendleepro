@@ -48,7 +48,9 @@ import {
   ProfileCardEspecialization,
   ButtonEditDiv,
   ButtonEdit,
-  ButtonEditText
+  ButtonEditText,
+  ButtonEditService,
+  ButtonEditServiceText
 } from './styles';
 
 import { getProviders } from '~/services/providers';
@@ -69,6 +71,11 @@ function Profile({ isFocused, navigation }) {
   const handleEdit = useCallback(() => {
     console.log('editing');
     navigation.navigate('ProfileEdit', {profile});
+  });
+
+  const handleServicesEdit = useCallback(() => {
+    console.log('editing services');
+    // navigation.navigate('ProfileServicesEdit', {profile});
   });
 
   useEffect(() => {
@@ -204,6 +211,12 @@ function Profile({ isFocused, navigation }) {
           <ButtonEdit onPress={handleEdit}>
             <ButtonEditText>EDIT PROFILE</ButtonEditText>
           </ButtonEdit>
+        </ButtonEditDiv>
+
+        <ButtonEditDiv>
+          <ButtonEditService onPress={handleServicesEdit}>
+            <ButtonEditServiceText>EDIT SERVICES</ButtonEditServiceText>
+          </ButtonEditService>
         </ButtonEditDiv>
       </Div>
     );
