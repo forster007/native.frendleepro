@@ -3,7 +3,7 @@ import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Header } from '~/components';
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import {
   Container,
   Content,
@@ -46,6 +46,9 @@ import {
   ProfileCardInfoRating,
   ProfileCardInfoCertificationIcon,
   ProfileCardEspecialization,
+  ButtonEditDiv,
+  ButtonEdit,
+  ButtonEditText
 } from './styles';
 
 import { getProviders } from '~/services/providers';
@@ -60,7 +63,12 @@ function Profile({ isFocused, navigation }) {
   const handleProfile = useCallback(async () => {
     const response = await getProviders();
     setProfile(response.data);
-    //console.log(response.data);
+    console.log(response.data);
+  });
+
+  const handleEdit = useCallback(() => {
+    console.log('editing');
+    navigation.navigate('ProfileEdit', {profile});
   });
 
   useEffect(() => {
@@ -160,7 +168,7 @@ function Profile({ isFocused, navigation }) {
               </ProfileCardRatingTextDown>
             </ProfileCardRatingItem>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>{profile.stars}</ProfileCardRatingText>
+              <ProfileCardRatingText>00{profile.recomendations}</ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Recomendações super positivas
               </ProfileCardRatingTextDown>
@@ -183,15 +191,20 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{ flex: 1 }}>
           <ProfileStuffsFlatList
-          data={profile.stuffs}
-          keyExtractor={item => item.id}
-          renderItem={renderStuff}
-          ListEmptyComponent={<Div />}
-        />
+            data={profile.stuffs}
+            keyExtractor={item => item.id}
+            renderItem={renderStuff}
+            ListEmptyComponent={<Div />}
+          />
         </SafeAreaView>
 
+        <ButtonEditDiv>
+          <ButtonEdit onPress={handleEdit}>
+            <ButtonEditText>EDIT PROFILE</ButtonEditText>
+          </ButtonEdit>
+        </ButtonEditDiv>
       </Div>
     );
   }
