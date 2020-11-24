@@ -419,6 +419,6 @@ export const ButtonEditDiv = styled.View`
   flex-direction: row;
   justify-content: space-between;
   height: 50px;
-  margin: 10px 0;
+  margin-bottom: 10px;
   width: 100%;
 `;

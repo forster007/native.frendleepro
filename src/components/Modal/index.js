@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Modal } from 'react-native';
 import { useDispatch } from 'react-redux';
+import NavigationService from '../../services/navigation';
 import { signOutRequest } from '../../store/modules/auth/actions';
 import Header from '../Header';
 import { Container, IconBlock, IconImage, IconText } from './styles';
 
 export default function App({ modalVisible, setModalVisible }) {
   const dispatch = useDispatch();
+
+  const handleAbout = useCallback(() => {
+    console.log('About');
+    setModalVisible(false);
+    NavigationService.navigate('About');
+  });
 
   return (
     <Modal
@@ -25,7 +32,7 @@ export default function App({ modalVisible, setModalVisible }) {
         rightProps={modalVisible}
       />
       <Container>
-        <IconBlock>
+        <IconBlock onPress={handleAbout}>
           <IconImage
             source={require('../../../assets/frendlee-icon-about.png')}
           />

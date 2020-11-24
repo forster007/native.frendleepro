@@ -29,7 +29,6 @@ import {
   ProfileCardStuff,
   ProfileCardStuffText,
   DivisorInfo,
-  ProfileStuffsFlatList,
   ProfileCardInfoSmokerIcon,
   ProfileCardInfoPetFrendlyIcon,
   ProfileHalfCardInfo,
@@ -70,7 +69,7 @@ function Profile({ isFocused, navigation }) {
 
   const handleEdit = useCallback(() => {
     console.log('editing');
-    navigation.navigate('ProfileEdit', {profile});
+    navigation.navigate('ProfileEdit', { profile });
   });
 
   const handleServicesEdit = useCallback(() => {
@@ -88,10 +87,10 @@ function Profile({ isFocused, navigation }) {
     setMonthsOnFrendlee(`${moment().diff(profile.created_at, 'months')}`);
   }, [profile]);
 
-  function renderStuff({ item }) {
+  function renderStuff( name ) {
     return (
       <ProfileCardStuff>
-        <ProfileCardStuffText>{item.name}</ProfileCardStuffText>
+        <ProfileCardStuffText>{name}</ProfileCardStuffText>
       </ProfileCardStuff>
     );
   }
@@ -198,13 +197,8 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <SafeAreaView style={{ flex: 1 }}>
-          <ProfileStuffsFlatList
-            data={profile.stuffs}
-            keyExtractor={item => item.id}
-            renderItem={renderStuff}
-            ListEmptyComponent={<Div />}
-          />
+        <SafeAreaView style={{ flex: 1, marginBottom:20}}>
+          {profile.stuffs?.map(({name}) => renderStuff(name))}
         </SafeAreaView>
 
         <ButtonEditDiv>

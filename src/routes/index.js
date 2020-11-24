@@ -9,6 +9,7 @@ import SignIn from '~/pages/SignIn';
 import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
 import Profile from '~/pages/Profile';
 import ProfileEdit from '~/pages/ProfileEdit';
+import About from '~/pages/About';
 
 import Chat from '~/pages/Chat';
 import Schedule from '~/pages/Schedule';
@@ -65,6 +66,7 @@ const AppStack = createStackNavigator(
     AppTabs,
     Profile,
     ProfileEdit,
+    About,
     Chat,
     ScheduleDetail,
   },
