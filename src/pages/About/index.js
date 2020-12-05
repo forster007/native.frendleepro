@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { Linking } from 'react-native';
 import { Header, Modal } from '../../components';
 import {
   Container,
   Content,
   BlockBody,
   BlockHeader,
-  BodyTitle,
+  FreendleLink,
   Divisor,
   HeaderLogo,
   DescriptionFooterText,
@@ -41,7 +42,7 @@ export default function About({ navigation }) {
               hell of put a bird on it bespoke jianbing mlkshk chillwave tote
               bag cold-pressed.{'\n\n'} Ennui raw denim austin thundercats pug
               venmo. Raw denim before they sold out truffaut man braid stumptown
-              tumblr next level slow-carb.{' '}
+              tumblr next level slow-carb.
             </DescriptionText>
           </DescriptionDiv>
         </BlockHeader>
@@ -56,17 +57,17 @@ export default function About({ navigation }) {
           </SocialMediasDiv>
 
           <DescriptionDiv>
-            <BodyTitle>frendlee.com.br </BodyTitle>
+            <FreendleLink
+              onPress={() => Linking.openURL('http://frendlee.com.br')}
+            >
+              frendlee.com.br
+            </FreendleLink>
           </DescriptionDiv>
 
           <DescriptionDiv>
             <DescriptionText>
               Quer mais informações? Veja aqui nossos{' '}
-              <DescriptionLink
-                onPress={() => {
-                  console.log('Open TOS');
-                }}
-              >
+              <DescriptionLink onPress={() => navigation.navigate('TermsUse')}>
                 Termos de Serviço
               </DescriptionLink>{' '}
               (TOS)

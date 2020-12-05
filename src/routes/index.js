@@ -10,6 +10,8 @@ import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
 import Profile from '~/pages/Profile';
 import ProfileEdit from '~/pages/ProfileEdit';
 import About from '~/pages/About';
+import TermsUse from '~/pages/TermsUse';
+import FAQ from '~/pages/FAQ';
 
 import Chat from '~/pages/Chat';
 import Schedule from '~/pages/Schedule';
@@ -69,6 +71,8 @@ const AppStack = createStackNavigator(
     About,
     Chat,
     ScheduleDetail,
+    FAQ,
+    TermsUse,
   },
   {
     headerMode: 'none',

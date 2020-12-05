@@ -10,9 +10,18 @@ export default function App({ modalVisible, setModalVisible }) {
   const dispatch = useDispatch();
 
   const handleAbout = useCallback(() => {
-    console.log('About');
     setModalVisible(false);
     NavigationService.navigate('About');
+  });
+
+  const handleTermsUse = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('TermsUse');
+  });
+
+  const handleFAQ = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('FAQ');
   });
 
   return (
@@ -38,7 +47,7 @@ export default function App({ modalVisible, setModalVisible }) {
           />
           <IconText>About us</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleFAQ}>
           <IconImage
             source={require('../../../assets/frendlee-icon-faq.png')}
           />
@@ -62,7 +71,7 @@ export default function App({ modalVisible, setModalVisible }) {
           />
           <IconText>Distance learning</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleTermsUse}>
           <IconImage
             source={require('../../../assets/frendlee-icon-terms.png')}
           />

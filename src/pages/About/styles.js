@@ -1,7 +1,4 @@
-import React from 'react';
 import { Dimensions, Platform } from 'react-native';
-import DatePicker from 'react-native-datepicker';
-import Moment from 'moment';
 import { CheckBox } from 'react-native-elements';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -12,7 +9,7 @@ const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
   margin: 20px 0 0 0;
-  padding: 10px 20px 0 20px;
+  padding-top: 10px;
   flex: 1;
 `;
 
@@ -29,7 +26,7 @@ export const BodyRow = styled.View`
   padding: 10px 0;
 `;
 
-export const BodyTitle = styled.Text`
+export const FreendleLink = styled.Text`
   color: #16b8dc;
   text-align: center;
   font-size: 20px;
@@ -74,7 +71,7 @@ export const ButtonGroup = styled.View`
 
 export const ButtonGroupOption = styled(RectButton)`
   align-items: center;
-  background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')}
+  background-color: ${({ selected }) => (selected ? '#4c476f' : 'transparent')};
   border-radius: 4px;
   height: 40px;
   justify-content: center;
@@ -111,14 +108,13 @@ export const Content = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
 })`
   background: #ebf2fa;
+  margin: 0 20px;
 `;
 
 export const Divisor = styled.View`
   background-color: #86bbd8;
   height: 1px;
-  margin: 0 20px;
-  padding: 0 20px;
-  width: 90%;
+  width: 100%;
 `;
 
 export const FormContainer = styled.KeyboardAvoidingView.attrs({
@@ -148,7 +144,7 @@ export const DescriptionText = styled.Text`
   text-align: center;
   font-size: 16px;
   line-height: 20px;
-  padding: 15px 15px;
+  padding: 15px 0;
 `;
 
 export const DescriptionLink = styled(DescriptionText)`
