@@ -12,6 +12,7 @@ import ProfileEdit from '~/pages/ProfileEdit';
 import About from '~/pages/About';
 import TermsUse from '~/pages/TermsUse';
 import FAQ from '~/pages/FAQ';
+import ReportProblem from '~/pages/ReportProblem';
 
 import Chat from '~/pages/Chat';
 import Schedule from '~/pages/Schedule';
@@ -73,6 +74,7 @@ const AppStack = createStackNavigator(
     ScheduleDetail,
     FAQ,
     TermsUse,
+    ReportProblem,
   },
   {
     headerMode: 'none',

@@ -24,6 +24,11 @@ export default function App({ modalVisible, setModalVisible }) {
     NavigationService.navigate('FAQ');
   });
 
+  const handleReportProblem = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('ReportProblem');
+  });
+
   return (
     <Modal
       animationType="slide"
@@ -53,7 +58,7 @@ export default function App({ modalVisible, setModalVisible }) {
           />
           <IconText>Common questions</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleReportProblem}>
           <IconImage
             source={require('../../../assets/frendlee-icon-feedback.png')}
           />
