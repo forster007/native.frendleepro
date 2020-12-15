@@ -3,8 +3,8 @@ import { StatusBar, View } from 'react-native';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { useSelector } from 'react-redux';
 
-import NavigationService from '~/services/navigation';
-import Routes from '~/routes';
+import NavigationService from './services/navigation';
+import Routes from './routes';
 
 export default function App() {
   const { signed } = useSelector(
