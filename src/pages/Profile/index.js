@@ -49,7 +49,8 @@ import {
   ButtonEdit,
   ButtonEditText,
   ButtonEditService,
-  ButtonEditServiceText
+  ButtonEditServiceText,
+  ProfileStuffsFlatList,
 } from './styles';
 
 import { getProviders } from '../../services/providers';
@@ -64,9 +65,7 @@ function Profile({ isFocused, navigation }) {
   const handleProfile = useCallback(async () => {
     const response = await getProviders();
     setProfile(response.data);
-<<<<<<< HEAD
     // console.log(response.data);
-=======
     console.log(response.data);
   });
 
@@ -78,7 +77,6 @@ function Profile({ isFocused, navigation }) {
   const handleServicesEdit = useCallback(() => {
     console.log('editing services');
     // navigation.navigate('ProfileServicesEdit', {profile});
->>>>>>> origin
   });
 
   useEffect(() => {
@@ -91,10 +89,10 @@ function Profile({ isFocused, navigation }) {
     setMonthsOnFrendlee(`${moment().diff(profile.created_at, 'months')}`);
   }, [profile]);
 
-  function renderStuff( name ) {
+  function renderStuff(uname) {
     return (
       <ProfileCardStuff>
-        <ProfileCardStuffText>{name}</ProfileCardStuffText>
+        <ProfileCardStuffText>{uname}</ProfileCardStuffText>
       </ProfileCardStuff>
     );
   }
@@ -184,7 +182,9 @@ function Profile({ isFocused, navigation }) {
               </ProfileCardRatingTextDown>
             </ProfileCardRatingItem>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>00{profile.recomendations}</ProfileCardRatingText>
+              <ProfileCardRatingText>
+                00{profile.recomendations}
+              </ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Recomendações super positivas
               </ProfileCardRatingTextDown>
@@ -207,7 +207,6 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-<<<<<<< HEAD
         <SafeAreaView style={{ flex: 1 }}>
           <ProfileStuffsFlatList
             data={profile.stuffs}
@@ -216,9 +215,8 @@ function Profile({ isFocused, navigation }) {
             ListEmptyComponent={<Div />}
           />
         </SafeAreaView>
-=======
-        <SafeAreaView style={{ flex: 1, marginBottom:20}}>
-          {profile.stuffs?.map(({name}) => renderStuff(name))}
+        <SafeAreaView style={{ flex: 1, marginBottom: 20 }}>
+          {profile.stuffs.map(({ name: uname }) => renderStuff(uname))}
         </SafeAreaView>
 
         <ButtonEditDiv>
@@ -232,7 +230,6 @@ function Profile({ isFocused, navigation }) {
             <ButtonEditServiceText>EDIT SERVICES</ButtonEditServiceText>
           </ButtonEditService>
         </ButtonEditDiv>
->>>>>>> origin
       </Div>
     );
   }

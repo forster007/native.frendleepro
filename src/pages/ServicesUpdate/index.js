@@ -31,8 +31,8 @@ import {
   InputIcon,
   InputTitle,
 } from './styles';
-import api from '~/services/api';
-import { updateProvider } from '~/services/providers';
+import api from '../../services/api';
+import { updateProvider } from '../../services/providers';
 
 export default function ServicesUpdate({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
