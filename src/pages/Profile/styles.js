@@ -3,7 +3,11 @@ import {
   FontAwesome5,
   MaterialCommunityIcons,
 } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
+import { Dimensions } from 'react-native';
+
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 export const Container = styled.View`
   background-color: #dcd9e3;
@@ -373,4 +377,48 @@ export const ProfileCardStuffText = styled.Text`
 
 export const ProfileStuffsFlatList = styled.FlatList`
   padding-bottom: 15px;
+`;
+
+export const ButtonEdit = styled(TouchableOpacity)`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  border: 2px solid #16b8dc;
+  border-radius: 4px;
+  height: 42px;
+  justify-content: center;
+  width: ${screenWidth - 20}px;
+`;
+
+export const ButtonEditText = styled.Text`
+  color: #16b8dc;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+export const ButtonEditService = styled(TouchableOpacity)`
+  flex: 1;
+  background-color: #16b8dc;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  border-radius: 4px;
+  height: 42px;
+  justify-content: center;
+  width: ${screenWidth - 20}px;
+`;
+
+export const ButtonEditServiceText = styled.Text`
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+`;
+export const ButtonEditDiv = styled.View`
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 50px;
+  margin-bottom: 10px;
+  width: 100%;
 `;

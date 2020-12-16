@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Modal } from 'react-native';
+import { useDispatch } from 'react-redux';
+import NavigationService from '../../services/navigation';
+import { signOutRequest } from '../../store/modules/auth/actions';
 import Header from '../Header';
 import { Container, IconBlock, IconImage, IconText } from './styles';
 
 export default function App({ modalVisible, setModalVisible }) {
+  const dispatch = useDispatch();
+
+  const handleAbout = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('About');
+  });
+
+  const handleTermsUse = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('TermsUse');
+  });
+
+  const handleFAQ = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('FAQ');
+  });
+
+  const handleReportProblem = useCallback(() => {
+    setModalVisible(false);
+    NavigationService.navigate('ReportProblem');
+  });
+
   return (
     <Modal
       animationType="slide"
@@ -21,25 +46,25 @@ export default function App({ modalVisible, setModalVisible }) {
         rightProps={modalVisible}
       />
       <Container>
-        <IconBlock>
+        <IconBlock onPress={handleAbout}>
           <IconImage
             source={require('../../../assets/frendlee-icon-about.png')}
           />
           <IconText>About us</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleFAQ}>
           <IconImage
             source={require('../../../assets/frendlee-icon-faq.png')}
           />
           <IconText>Common questions</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleReportProblem}>
           <IconImage
             source={require('../../../assets/frendlee-icon-feedback.png')}
           />
           <IconText>Contact us</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={() => dispatch(signOutRequest())}>
           <IconImage
             source={require('../../../assets/frendlee-icon-exit.png')}
           />
@@ -51,7 +76,7 @@ export default function App({ modalVisible, setModalVisible }) {
           />
           <IconText>Distance learning</IconText>
         </IconBlock>
-        <IconBlock>
+        <IconBlock onPress={handleTermsUse}>
           <IconImage
             source={require('../../../assets/frendlee-icon-terms.png')}
           />
