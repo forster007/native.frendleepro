@@ -1,7 +1,7 @@
 import { eventChannel } from 'redux-saga';
 import { all, call, put, select, take, takeLatest } from 'redux-saga/effects';
-import { getMessages, sendMesssage } from '~/services/messages';
-import { connect, socket } from '~/services/websocket';
+import { getMessages, sendMesssage } from '../../../services/messages';
+import { connect, socket } from '../../../services/websocket';
 import { messagesSuccess } from './actions';
 import types from './types';
 

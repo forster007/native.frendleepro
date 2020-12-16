@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { Header } from '~/components';
 import { SafeAreaView } from 'react-native';
+import { Header } from '../../components';
 import {
   Container,
   Content,
@@ -49,10 +49,11 @@ import {
   ButtonEdit,
   ButtonEditText,
   ButtonEditService,
-  ButtonEditServiceText
+  ButtonEditServiceText,
+  ProfileStuffsFlatList,
 } from './styles';
 
-import { getProviders } from '~/services/providers';
+import { getProviders } from '../../services/providers';
 
 function Profile({ isFocused, navigation }) {
   const { user, token } = useSelector(state => state.auth);
@@ -64,6 +65,7 @@ function Profile({ isFocused, navigation }) {
   const handleProfile = useCallback(async () => {
     const response = await getProviders();
     setProfile(response.data);
+    // console.log(response.data);
     console.log(response.data);
   });
 
@@ -87,10 +89,10 @@ function Profile({ isFocused, navigation }) {
     setMonthsOnFrendlee(`${moment().diff(profile.created_at, 'months')}`);
   }, [profile]);
 
-  function renderStuff( name ) {
+  function renderStuff(uname) {
     return (
       <ProfileCardStuff>
-        <ProfileCardStuffText>{name}</ProfileCardStuffText>
+        <ProfileCardStuffText>{uname}</ProfileCardStuffText>
       </ProfileCardStuff>
     );
   }
@@ -107,9 +109,7 @@ function Profile({ isFocused, navigation }) {
 
         <ProfileCardInformation>
           <ProfileCardInformationSsnIcon />
-          <ProfileCardInformationText>
-            {profile.ssn}
-          </ProfileCardInformationText>
+          <ProfileCardInformationText>{profile.ssn}</ProfileCardInformationText>
         </ProfileCardInformation>
 
         <ProfileCardInformation>
@@ -139,27 +139,33 @@ function Profile({ isFocused, navigation }) {
 
           <ProfileHalfCardInfo>
             <ProfileCardInfoGenderIcon gender={profile.gender} />
-            <ProfileHalfCardInfoText>{profile.gender === 'female' ? 'Woman' : 'Men'}</ProfileHalfCardInfoText>
+            <ProfileHalfCardInfoText>
+              {profile.gender === 'female' ? 'Woman' : 'Men'}
+            </ProfileHalfCardInfoText>
           </ProfileHalfCardInfo>
         </ProfileCardInfo>
 
         <ProfileCardInfo>
           <ProfileHalfCardInfo>
             <ProfileCardInfoSmokerIcon smoker={profile.smoker} />
-            <ProfileHalfCardInfoText>{profile.smoker ? 'Smoker' : 'Non-smoker'}</ProfileHalfCardInfoText>
+            <ProfileHalfCardInfoText>
+              {profile.smoker ? 'Smoker' : 'Non-smoker'}
+            </ProfileHalfCardInfoText>
           </ProfileHalfCardInfo>
 
           <ProfileHalfCardInfo>
             <ProfileCardInfoPetFrendlyIcon petFriendly={profile.pet_friendly} />
-            <ProfileHalfCardInfoText>{profile.pet_friendly ? 'Pet friendly' : 'Without Pet\'s'}</ProfileHalfCardInfoText>
+            <ProfileHalfCardInfoText>
+              {profile.pet_friendly ? 'Pet friendly' : "Without Pet's"}
+            </ProfileHalfCardInfoText>
           </ProfileHalfCardInfo>
         </ProfileCardInfo>
 
         <ProfileCardInfo>
           <ProfileCardAtLeft>
-            <ProfileCardInfoInstagramIcon onPress={() => { }} />
+            <ProfileCardInfoInstagramIcon onPress={() => {}} />
             <ProfileHalfCardInfoText>•</ProfileHalfCardInfoText>
-            <ProfileCardInfoFacebookIcon onPress={() => { }} />
+            <ProfileCardInfoFacebookIcon onPress={() => {}} />
           </ProfileCardAtLeft>
         </ProfileCardInfo>
 
@@ -168,13 +174,17 @@ function Profile({ isFocused, navigation }) {
         <ProfileCardInfoRating>
           <ProfileCardRating>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>{profile.treatments}</ProfileCardRatingText>
+              <ProfileCardRatingText>
+                {profile.treatments}
+              </ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Pessoas Atendidas
               </ProfileCardRatingTextDown>
             </ProfileCardRatingItem>
             <ProfileCardRatingItem>
-              <ProfileCardRatingText>00{profile.recomendations}</ProfileCardRatingText>
+              <ProfileCardRatingText>
+                00{profile.recomendations}
+              </ProfileCardRatingText>
               <ProfileCardRatingTextDown>
                 Recomendações super positivas
               </ProfileCardRatingTextDown>
@@ -197,8 +207,16 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <SafeAreaView style={{ flex: 1, marginBottom:20}}>
-          {profile.stuffs?.map(({name}) => renderStuff(name))}
+        <SafeAreaView style={{ flex: 1 }}>
+          <ProfileStuffsFlatList
+            data={profile.stuffs}
+            keyExtractor={item => item.id}
+            renderItem={renderStuff}
+            ListEmptyComponent={<Div />}
+          />
+        </SafeAreaView>
+        <SafeAreaView style={{ flex: 1, marginBottom: 20 }}>
+          {profile.stuffs.map(({ name: uname }) => renderStuff(uname))}
         </SafeAreaView>
 
         <ButtonEditDiv>
@@ -221,7 +239,7 @@ function Profile({ isFocused, navigation }) {
       <Header left="goBack" right="none" title="Profile" titleAlign="left" />
 
       <Content>
-        <ProfileAvatar source={{ uri: profile.avatar?.uri }}>
+        <ProfileAvatar source={{ uri: profile.avatar.uri }}>
           <ProfileName>
             <ProfileNameText>{name}</ProfileNameText>
           </ProfileName>

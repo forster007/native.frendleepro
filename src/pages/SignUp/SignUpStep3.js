@@ -24,7 +24,7 @@ import {
   TermsCheckBox,
 } from './styles';
 
-import api from '~/services/api';
+import api from '../../services/api';
 
 export default function SignUpStep3({ navigation }) {
   const [buttonState, setButtonState] = useState(false);

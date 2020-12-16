@@ -1,4 +1,4 @@
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, StatusBar, View } from 'react-native';
@@ -6,8 +6,8 @@ import { withNavigationFocus } from 'react-navigation';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { Header, Modal } from '../../components';
-import { getAppointments } from '~/services/appointments';
-import { storeOnesignal } from '~/services/onesignal';
+import { getAppointments } from '../../services/appointments';
+import { storeOnesignal } from '../../services/onesignal';
 import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,
@@ -104,13 +104,24 @@ function Schedule({ isFocused, navigation }) {
   });
 
   const handleNotifications = useCallback(async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
       Alert.alert('OPS...', 'No notification permissions!');
       return;
     }
 
-    const onesignal = await Notifications.getExpoPushTokenAsync();
+    const onesignal = (await Notifications.getExpoPushTokenAsync()).data;
+
     await storeOnesignal({ onesignal });
   });
 
@@ -124,14 +135,6 @@ function Schedule({ isFocused, navigation }) {
   useEffect(() => {
     handleAppointments();
     handleNotifications();
-
-    const notificationSubscription = Notifications.addListener(
-      handleNotification
-    );
-
-    return () => {
-      notificationSubscription.remove();
-    };
   }, []);
 
   useEffect(() => {

@@ -5,20 +5,20 @@ import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
-import SignIn from '~/pages/SignIn';
-import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
-import Profile from '~/pages/Profile';
-import ProfileUpdate from '~/pages/ProfileUpdate';
-import ServicesUpdate from '~/pages/ServicesUpdate';
-import About from '~/pages/About';
-import TermsUse from '~/pages/TermsUse';
-import FAQ from '~/pages/FAQ';
-import ReportProblem from '~/pages/ReportProblem';
+import SignIn from '../pages/SignIn';
+import { SignUpStep1, SignUpStep2, SignUpStep3 } from '../pages/SignUp';
+import Profile from '../pages/Profile';
+import ProfileUpdate from '../pages/ProfileUpdate';
+import ServicesUpdate from '../pages/ServicesUpdate';
+import About from '../pages/About';
+import TermsUse from '../pages/TermsUse';
+import FAQ from '../pages/FAQ';
+import ReportProblem from '../pages/ReportProblem';
 
-import Chat from '~/pages/Chat';
-import Schedule from '~/pages/Schedule';
-import Requests from '~/pages/Requests';
-import ScheduleDetail from '~/pages/ScheduleDetail';
+import Chat from '../pages/Chat';
+import Schedule from '../pages/Schedule';
+import Requests from '../pages/Requests';
+import ScheduleDetail from '../pages/ScheduleDetail';
 
 const SignStack = createStackNavigator(
   {

@@ -39,7 +39,7 @@ import {
   StepNumber,
   StepText,
 } from './styles';
-import api from '~/services/api';
+import api from '../../services/api';
 
 export default function SignUpStep1({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();

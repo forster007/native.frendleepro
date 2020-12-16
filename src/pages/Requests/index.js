@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 import moment from 'moment';
-import { getRequests, updateAppointments } from '~/services/appointments';
+import { getRequests, updateAppointments } from '../../services/appointments';
 
 import { Header } from '../../components';
 import {
