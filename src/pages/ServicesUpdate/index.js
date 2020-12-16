@@ -16,32 +16,25 @@ import {
   ButtonInput,
   ButtonNext,
   ButtonNextText,
-  ButtonSignUpFacebook,
-  ButtonSignUpFacebookIcon,
-  ButtonSignUpFacebookText,
   Container,
   Content,
   Div,
   Divisor,
-  FooterStep,
   FrendleeProfilePicture,
   Gender,
   GenderImage,
   GenderText,
   HeaderLogo,
-  HeaderSubTitle,
   HeaderTitle,
   Input,
   InputDatePicker,
   InputIcon,
   InputTitle,
-  StepNumber,
-  StepText,
 } from './styles';
 import api from '~/services/api';
 import { updateProvider } from '~/services/providers';
 
-export default function ProfileEdit({ navigation }) {
+export default function ServicesUpdate({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const { user } = useSelector(state => state.auth);

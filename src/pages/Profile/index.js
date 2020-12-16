@@ -69,7 +69,7 @@ function Profile({ isFocused, navigation }) {
 
   const handleEdit = useCallback(() => {
     console.log('editing');
-    navigation.navigate('ProfileEdit', { profile });
+    navigation.navigate('ProfileUpdate', { profile });
   });
 
   const handleServicesEdit = useCallback(() => {

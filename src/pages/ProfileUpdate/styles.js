@@ -122,29 +122,6 @@ export const ButtonNextText = styled.Text`
   font-weight: bold;
 `;
 
-export const ButtonSignUpFacebook = styled(RectButton)`
-  align-items: center;
-  background-color: #3b5998;
-  border-radius: 4px;
-  flex-direction: row;
-  height: 42px;
-  justify-content: space-between;
-  margin-top: 20px;
-  padding: 0 20px 0 20px;
-  width: 100%;
-`;
-
-export const ButtonSignUpFacebookIcon = styled(FontAwesome).attrs({
-  color: '#ffffff',
-  name: 'facebook',
-  size: 20,
-})``;
-
-export const ButtonSignUpFacebookText = styled.Text`
-  color: #ffffff;
-  font-size: 20px;
-`;
-
 export const ButtonText = styled.Text`
   color: ${({ selected }) => (selected ? '#ffffff' : '#1ec5ea')};
   font-size: 16px;
@@ -184,14 +161,6 @@ export const Divisor = styled.View`
   margin: ${({ marginTop }) => marginTop || '30px'} 0 20px;
   padding: 0 20px;
   width: 100%;
-`;
-
-export const FooterStep = styled.View`
-  align-items: center;
-  border-top-color: ${({ selected }) => (selected ? '#ffffff' : '#302d46')};
-  border-top-width: 10px;
-  justify-content: center;
-  width: 33.33%;
 `;
 
 export const FormContainer = styled.KeyboardAvoidingView.attrs({
@@ -251,12 +220,6 @@ export const HeaderLogo = styled.Image.attrs({
 })`
   height: 40px;
   width: 160px;
-`;
-
-export const HeaderSubTitle = styled.Text`
-  color: #4c476f;
-  font-size: 18px;
-  padding: 10px 0 0;
 `;
 
 export const HeaderTitle = styled.Text`
@@ -351,18 +314,6 @@ export const InputTitle = styled.Text`
 export const Slider = styled.Slider`
   left: ${Platform.OS === 'android' ? '-10px' : '0px'};
   width: ${Platform.OS === 'android' ? '80%' : '70%'};
-`;
-
-export const StepNumber = styled.Text`
-  color: ${({ selected }) => (selected ? '#e0e0e0' : '#302d46')};
-  font-size: ${({ selected }) => (selected ? '54px' : '32px')};
-  font-weight: bold;
-`;
-
-export const StepText = styled.Text`
-  color: #e0e0e0;
-  font-size: 18px;
-  font-weight: bold;
 `;
 
 export const TermsCheckBox = styled(CheckBox).attrs(() => ({

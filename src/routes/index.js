@@ -8,7 +8,8 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import SignIn from '~/pages/SignIn';
 import { SignUpStep1, SignUpStep2, SignUpStep3 } from '~/pages/SignUp';
 import Profile from '~/pages/Profile';
-import ProfileEdit from '~/pages/ProfileEdit';
+import ProfileUpdate from '~/pages/ProfileUpdate';
+import ServicesUpdate from '~/pages/ServicesUpdate';
 import About from '~/pages/About';
 import TermsUse from '~/pages/TermsUse';
 import FAQ from '~/pages/FAQ';
@@ -68,7 +69,8 @@ const AppStack = createStackNavigator(
   {
     AppTabs,
     Profile,
-    ProfileEdit,
+    ProfileUpdate,
+    ServicesUpdate,
     About,
     Chat,
     ScheduleDetail,
