@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 const screenWidth = Math.round(Dimensions.get('window').width);
 const { height } = Dimensions.get('window');
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   padding-top: ${Platform.OS === 'ios' && height >= 812
     ? '50px'

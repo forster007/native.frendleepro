@@ -12,18 +12,20 @@ const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
   background-color: #e9edf3;
-  margin: 20px 0 0 0;
+  margin: 0;
   padding: 10px 20px 0 20px;
 `;
 
 export const BlockFooter = styled.View`
-  background-color: #1ec5ea;
-  flex-direction: row;
-  height: ${Platform.OS === 'ios' && height >= 812 ? '150px' : '130px'};
-  justify-content: space-between;
+  background-color: #e9edf3;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   padding-top: 0px;
   width: 100%;
+  padding: 0 20px;
 `;
+
 export const BlockHeader = styled.View`
   align-items: center;
   justify-content: center;
@@ -114,6 +116,7 @@ export const ButtonNext = styled(RectButton).attrs(props => ({
   height: 42px;
   justify-content: center;
   width: 100%;
+  margin: 20px 0;
 `;
 
 export const ButtonNextText = styled.Text`
@@ -128,7 +131,7 @@ export const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   padding-top: ${Platform.OS === 'ios' && height >= 812
     ? '50px'
@@ -326,3 +329,9 @@ export const TermsCheckBox = styled(CheckBox).attrs(() => ({
   },
   size: 25,
 }))``;
+
+export const HeaderSubTitle = styled.Text`
+  color: #4c476f;
+  font-size: 18px;
+  padding: 10px 0 0;
+`;

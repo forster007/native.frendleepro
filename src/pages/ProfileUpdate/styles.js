@@ -12,7 +12,7 @@ const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
   background-color: #e9edf3;
-  margin: 0px 0 0 0;
+  margin: 0px 0 20px 0;
   padding: 10px 20px 0 20px;
 `;
 
@@ -114,7 +114,7 @@ export const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   padding-top: ${Platform.OS === 'ios' && height >= 812
     ? '50px'

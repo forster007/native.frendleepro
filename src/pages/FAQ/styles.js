@@ -5,6 +5,7 @@ const { height } = Dimensions.get('window');
 
 export const Container = styled.View`
   flex: 1;
+  background: #ebf2fa;
   padding-top: ${Platform.OS === 'ios' && height >= 812
     ? '50px'
     : Platform.OS === 'android'
@@ -20,6 +21,5 @@ export const Content = styled.ScrollView.attrs({
   },
   showsVerticalScrollIndicator: false,
 })`
-  background: #ebf2fa;
   margin: 0 20px;
 `;

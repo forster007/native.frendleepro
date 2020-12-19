@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { withNavigationFocus } from 'react-navigation';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { SafeAreaView } from 'react-native';
 import { Header } from '../../components';
 import {
   Container,
@@ -50,7 +49,7 @@ import {
   ButtonEditText,
   ButtonEditService,
   ButtonEditServiceText,
-  ProfileStuffsFlatList,
+  AvailabilityActivitiesView,
 } from './styles';
 
 import { getProviders } from '../../services/providers';
@@ -76,7 +75,7 @@ function Profile({ isFocused, navigation }) {
 
   const handleServicesEdit = useCallback(() => {
     console.log('editing services');
-    // navigation.navigate('ProfileServicesEdit', {profile});
+    navigation.navigate('ServicesUpdate', {profile});
   });
 
   useEffect(() => {
@@ -207,9 +206,9 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <SafeAreaView style={{ flex: 1, marginBottom: 20 }}>
+        <AvailabilityActivitiesView>
           {profile.stuffs?.map(({ name: uname }) => renderStuff(uname))}
-        </SafeAreaView>
+        </AvailabilityActivitiesView>
 
         <ButtonEditDiv>
           <ButtonEdit onPress={handleEdit}>
@@ -228,7 +227,7 @@ function Profile({ isFocused, navigation }) {
 
   return (
     <Container>
-      <Header left="goBack" right="none" title="Profile" titleAlign="left" />
+      <Header left="goBack" title="Profile"/>
 
       <Content>
         <ProfileAvatar source={{ uri: profile.avatar?.uri }}>
