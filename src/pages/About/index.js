@@ -1,85 +1,58 @@
-import React, { useState } from 'react';
-import { Linking } from 'react-native';
-import { Header, Modal } from '../../components';
+import React from 'react';
+import { Header } from '../../components';
 import {
   Container,
   Content,
-  BlockBody,
-  BlockHeader,
-  FreendleLink,
-  Divisor,
-  HeaderLogo,
-  DescriptionFooterText,
-  DescriptionDiv,
-  DescriptionText,
-  DescriptionLink,
-  SocialMediaTwitterIcon,
+  ContentLink,
+  ContentSocialIcons,
+  ContentText,
+  ContentTextColored,
+  Footer,
+  FooterVersionText,
+  FrendleeLogo,
   SocialMediaFacebookIcon,
   SocialMediaInstagramIcon,
-  SocialMediasDiv,
+  SocialMediaTwitterIcon,
 } from './styles';
 
-export default function About({ navigation }) {
-  const [modalVisible, setModalVisible] = useState(false);
-
+export default function About() {
   return (
     <Container>
-      <Modal modalVisible={modalVisible} setModalVisible={setModalVisible} />
-      <Header
-        left="profile"
-        right="menu"
-        rightFunction={setModalVisible}
-        rightProps={modalVisible}
-        title="About Frendlee"
-      />
+      <Header left="goBack" title="About Frendlee" />
 
       <Content>
-        <BlockHeader>
-          <HeaderLogo />
-          <DescriptionDiv>
-            <DescriptionText>
-              Live-edge shabby chic portland 3 wolf moon squid meggings tumeric
-              hell of put a bird on it bespoke jianbing mlkshk chillwave tote
-              bag cold-pressed.{'\n\n'} Ennui raw denim austin thundercats pug
-              venmo. Raw denim before they sold out truffaut man braid stumptown
-              tumblr next level slow-carb.
-            </DescriptionText>
-          </DescriptionDiv>
-        </BlockHeader>
+        <FrendleeLogo />
 
-        <BlockBody>
-          <SocialMediasDiv>
-            <SocialMediaTwitterIcon onPress={() => {}} />
+        <ContentText>
+          Live-edge shabby chic portland 3 wolf moon squid meggings tumeric hell
+          of put a bird on it bespoke jianbing mlkshk chillwave tote bag
+          cold-pressed.
+        </ContentText>
 
-            <SocialMediaInstagramIcon onPress={() => {}} />
+        <ContentText>
+          Ennui raw denim austin thundercats pug venmo. Raw denim before they
+          sold out truffaut man braid stumptown tumblr next level slow-carb.
+        </ContentText>
 
-            <SocialMediaFacebookIcon onPress={() => {}} />
-          </SocialMediasDiv>
+        <ContentSocialIcons>
+          <SocialMediaTwitterIcon />
+          <SocialMediaFacebookIcon />
+          <SocialMediaInstagramIcon />
+        </ContentSocialIcons>
 
-          <DescriptionDiv>
-            <FreendleLink
-              onPress={() => Linking.openURL('http://frendlee.com.br')}
-            >
-              frendlee.com.br
-            </FreendleLink>
-          </DescriptionDiv>
+        <ContentLink>frendlee.com.br</ContentLink>
 
-          <DescriptionDiv>
-            <DescriptionText>
-              Quer mais informações? Veja aqui nossos{' '}
-              <DescriptionLink onPress={() => navigation.navigate('TermsUse')}>
-                Termos de Serviço
-              </DescriptionLink>{' '}
-              (TOS)
-            </DescriptionText>
-          </DescriptionDiv>
-        </BlockBody>
-
-        <Divisor />
-        <DescriptionDiv>
-          <DescriptionFooterText>VERSÃO 1.0</DescriptionFooterText>
-        </DescriptionDiv>
+        <ContentText>
+          Want more information? {`\n`}
+          See here our <ContentTextColored>
+            Terms of Service
+          </ContentTextColored>{' '}
+          (TOS)
+        </ContentText>
       </Content>
+      <Footer>
+        <FooterVersionText>VERSION 1.0</FooterVersionText>
+      </Footer>
     </Container>
   );
 }
