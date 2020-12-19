@@ -207,16 +207,8 @@ function Profile({ isFocused, navigation }) {
         </ProfileCardEspecialization>
 
         <ProfileTitle>Availability activities</ProfileTitle>
-        <SafeAreaView style={{ flex: 1 }}>
-          <ProfileStuffsFlatList
-            data={profile.stuffs}
-            keyExtractor={item => item.id}
-            renderItem={renderStuff}
-            ListEmptyComponent={<Div />}
-          />
-        </SafeAreaView>
         <SafeAreaView style={{ flex: 1, marginBottom: 20 }}>
-          {profile.stuffs.map(({ name: uname }) => renderStuff(uname))}
+          {profile.stuffs?.map(({ name: uname }) => renderStuff(uname))}
         </SafeAreaView>
 
         <ButtonEditDiv>
@@ -239,7 +231,7 @@ function Profile({ isFocused, navigation }) {
       <Header left="goBack" right="none" title="Profile" titleAlign="left" />
 
       <Content>
-        <ProfileAvatar source={{ uri: profile.avatar.uri }}>
+        <ProfileAvatar source={{ uri: profile.avatar?.uri }}>
           <ProfileName>
             <ProfileNameText>{name}</ProfileNameText>
           </ProfileName>

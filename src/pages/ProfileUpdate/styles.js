@@ -12,22 +12,8 @@ const { height } = Dimensions.get('window');
 
 export const BlockBody = styled.View`
   background-color: #e9edf3;
-  margin: 20px 0 0 0;
+  margin: 0px 0 0 0;
   padding: 10px 20px 0 20px;
-`;
-
-export const BlockFooter = styled.View`
-  background-color: #1ec5ea;
-  flex-direction: row;
-  height: ${Platform.OS === 'ios' && height >= 812 ? '150px' : '130px'};
-  justify-content: space-between;
-  padding-top: 0px;
-  width: 100%;
-`;
-export const BlockHeader = styled.View`
-  align-items: center;
-  justify-content: center;
-  padding: ${Platform.OS === 'android' ? '20px 20px 0px' : '0px 20px'};
 `;
 
 export const BodyRow = styled.View`
@@ -212,21 +198,6 @@ export const GenderText = styled.Text`
   color: ${({ genderSelected }) => (genderSelected ? '#fff' : '#1ec5ea')};
   font-size: 14px;
   margin: 5px 0 0 0;
-`;
-
-export const HeaderLogo = styled.Image.attrs({
-  resizeMode: 'contain',
-  source: require('../../../assets/frendlee-logo.png'),
-})`
-  height: 40px;
-  width: 160px;
-`;
-
-export const HeaderTitle = styled.Text`
-  color: #4c476f;
-  font-size: 24px;
-  font-weight: bold;
-  padding: 15px 0 0px;
 `;
 
 export const Input = styled.TextInput`

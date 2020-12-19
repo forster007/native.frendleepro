@@ -7,10 +7,9 @@ import { useSelector } from 'react-redux';
 import Constants from 'expo-constants';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getAddress } from '../../services/address';
+import { Header } from '../../components';
 import {
   BlockBody,
-  BlockFooter,
-  BlockHeader,
   BodyText,
   BodyTitle,
   ButtonInput,
@@ -24,8 +23,6 @@ import {
   Gender,
   GenderImage,
   GenderText,
-  HeaderLogo,
-  HeaderTitle,
   Input,
   InputDatePicker,
   InputIcon,
@@ -282,10 +279,12 @@ export default function ProfileUpdate({ navigation }) {
   return (
     <Container>
       <Content>
-        <BlockHeader>
-          <HeaderLogo />
-          <HeaderTitle>PROFILE EDIT</HeaderTitle>
-        </BlockHeader>
+        <Header
+          left="goBack"
+          right="none"
+          title="Profile Services"
+          titleAlign="left"
+        />
 
         <BlockBody>
           <BodyTitle>Document</BodyTitle>
