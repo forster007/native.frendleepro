@@ -1,4 +1,5 @@
 import React from 'react';
+import Constants from 'expo-constants';
 import { Header } from '../../components';
 import {
   Container,
@@ -51,7 +52,9 @@ export default function About() {
         </ContentText>
       </Content>
       <Footer>
-        <FooterVersionText>VERSION 1.0</FooterVersionText>
+        <FooterVersionText>
+          VERSION {Constants.manifest.version}
+        </FooterVersionText>
       </Footer>
     </Container>
   );
