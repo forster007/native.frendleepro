@@ -2,7 +2,7 @@
   "expo": {
     "android": {
       "package": "com.frendleepro",
-      "versionCode": 3
+      "versionCode": 10
     },
     "ios": {
       "bundleIdentifier": "com.frendleepro",
@@ -12,7 +12,7 @@
     "slug": "frendleePRO",
     "privacy": "public",
     "platforms": ["ios", "android"],
-    "version": "1.0.3",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
