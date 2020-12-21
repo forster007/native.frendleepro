@@ -1,54 +1,41 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, TouchableWithoutFeedback } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  ActivityIndicator,
+  Alert,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
-import { useSelector } from 'react-redux';
-import Constants from 'expo-constants';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { updateProvider, updateProviderImages } from '../../services/providers';
+import api from '../../services/api';
 import { Header } from '../../components';
 import {
-  BlockBody,
-  BodyText,
-  BodyTitle,
-  ButtonInput,
-  ButtonNext,
-  ButtonNextText,
+  Block,
+  ButtonSubmit,
+  ButtonSubmitText,
   Container,
   Content,
-  Div,
   Divisor,
-  FrendleeProfilePicture,
-  Gender,
-  GenderImage,
-  GenderText,
+  FormGroup,
+  H1,
   Input,
-  InputDatePicker,
-  InputIcon,
-  InputTitle,
+  KeyboardAvoidingView,
+  Label,
+  LabelImage,
+  ProfileImage,
+  Row,
 } from './styles';
-import api from '../../services/api';
-import { updateProvider } from '../../services/providers';
 
 export default function ProfileUpdate({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
-
-  const { user } = useSelector(state => state.auth);
-  const nameInputRef = useRef();
-  const lastnameInputRef = useRef();
-  const phoneInputRef = useRef();
-
-  const [pictureProfile, setPictureProfile] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [buttonState, setButtonState] = useState(true);
-  const [gender, setGender] = useState('');
-  const [name, setName] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [phone, setPhone] = useState('');
-
-  const [profile, setProfile] = useState([]);
-
-  const [validPhone, setValidPhone] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [profile] = useState({ ...navigation.state.params.profile });
+  const [pictureProfile, setPictureProfile] = useState(profile.avatar.uri);
+  const { token } = useSelector(state => state.auth);
 
   const handleAvatar = useCallback(async (option, result) => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
@@ -136,227 +123,121 @@ export default function ProfileUpdate({ navigation }) {
     );
   });
 
-  const updateProfile = useCallback(async () => {
-    const filenamePictureProfile = pictureProfile.split('/').pop();
+  const handleUpdate = useCallback(async () => {
+    try {
+      setLoading(true);
 
-    const data = {
-      birthdate: `${birthdate}T00:00:00-03:00`,
-      gender,
-      lastname,
-      name,
-      phone_number: phone,
-      phone_number_is_whatsapp: true,
+      const formData = new FormData();
+      formData.append('picture_profile', pictureProfile);
 
-      picture_profile: {
-        uri: pictureProfile,
-        name: filenamePictureProfile,
-        type: 'image/jpg',
-      },
-    };
+      console.log(formData);
 
-    const response = await updateProvider(data);
-    console.log(response);
-    navigation.goBack();
-  });
+      // const { data: provider } = await updateProvider('/providers', data);
 
-  const handlePhone = useCallback(async () => {
-    if (phone && phone.length >= 6) {
-      const { data } = await api.get(
-        `/checks?field=phone_number&value=${phone}`
+      // await updateProviderImages(profile.id, formData);
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+      await api.post(`/providers/${profile.id}/files`, formData);
+
+      Alert.alert(
+        'SUCCESS',
+        'Profile updated!',
+        [{ text: 'Ok', onPress: () => navigation.goBack() }],
+        { cancelable: false }
       );
-      console.log(`available ${data.available}`);
-      console.log(`phoneInputRef ${profile.phone_number}`);
-      console.log(profile.phone_number === phone);
-
-      const availablePhone = data.available || phone === profile.phone_number;
-      console.log(availablePhone);
-      setValidPhone(availablePhone);
-      console.log(`valid ${validPhone}`);
-
-      if (!validPhone) {
-        Alert.alert('WARNING', 'PHONE already in use');
-      }
-    } else if (phone && phone.length < 6) {
-      Alert.alert('WARNING', 'PHONE invalid');
-      setValidPhone(false);
-    } else {
-      setValidPhone(false);
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
     }
   });
 
   useEffect(() => {
-    if (phone && phone.length < 6) {
-      setValidPhone(false);
-    }
-  }, [phone, validPhone]);
-
-  useEffect(() => {
-    setProfile(navigation.getParam('profile'));
-    console.log(`here${JSON.stringify(profile)}`);
-    setName(profile.name);
-    setLastname(profile.lastname);
-    setPhone(profile.phone_number);
-    setBirthdate(profile.birthdate);
-    setGender(profile.gender);
-  }, [name, lastname]);
-
-  useEffect(() => {
-    if (
-      pictureProfile &&
-      birthdate &&
-      gender &&
-      name &&
-      lastname &&
-      phone &&
-      validPhone
-    ) {
-      setButtonState(true);
-    } else {
-      setButtonState(false);
-    }
-  }, [pictureProfile, birthdate, gender, name, lastname, phone, validPhone]);
+    console.log(profile);
+  }, [profile]);
 
   return (
     <Container>
-      <Content>
-        <Header left="goBack" title="Profile Update" />
+      <Header left="goBack" title="Profile Update" />
 
-        <BlockBody>
-          <BodyTitle>Document</BodyTitle>
-          <InputTitle>Type your BSN</InputTitle>
-          <Div align="center" direction="row" marginBottom>
-            <Input
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="numeric"
-              maxLength={9}
-              onSubmitEditing={() => nameInputRef.current.focus()}
-              returnKeyType="next"
-              value={profile.ssn}
-              disabled
-            />
-          </Div>
-          <Divisor />
-
-          <BodyTitle>Profile</BodyTitle>
-          <Div direction="column" justify="flex-start" marginBottom>
-            <InputTitle>Profile selfie</InputTitle>
-            <Div direction="row" justify="space-between">
-              <Div width="20%">
-                <TouchableWithoutFeedback
-                  onPress={() => handleImage('pictureProfile')}
-                >
-                  <FrendleeProfilePicture source={{ uri: pictureProfile }} />
-                </TouchableWithoutFeedback>
-              </Div>
-
-              <Div align="center" justify="center" width="80%">
-                <BodyText>
-                  Use a selfie where your face can be seen clearly, preferably.
-                </BodyText>
-              </Div>
-            </Div>
-          </Div>
-
-          <Div direction="column" justify="flex-start" marginBottom>
-            <InputTitle>Name</InputTitle>
-            <Input
-              autoCapitalize="words"
-              autoCorrect={false}
-              onChangeText={setName}
-              onSubmitEditing={() => lastnameInputRef.current.focus()}
-              ref={nameInputRef}
-              returnKeyType="next"
-              value={name}
-            />
-          </Div>
-
-          <Div direction="column" justify="flex-start" marginBottom>
-            <InputTitle>Lastname</InputTitle>
-            <Input
-              autoCapitalize="words"
-              autoCorrect={false}
-              onChangeText={setLastname}
-              onSubmitEditing={() => phoneInputRef.current.focus()}
-              ref={lastnameInputRef}
-              returnKeyType="next"
-              value={lastname}
-            />
-          </Div>
-
-          <Div direction="column" justify="flex-start" marginBottom>
-            <InputTitle>E-mail</InputTitle>
-            <Div align="center" direction="row">
-              <Input
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
-                onSubmitEditing={() => phoneInputRef.current.focus()}
-                returnKeyType="next"
-                value={user.email}
-                disabled
-              />
-            </Div>
-          </Div>
-
-          <Div direction="row" justify="space-between" marginBottom>
-            <Div width="48%">
-              <InputTitle>Telephone</InputTitle>
-              <Div align="center" direction="row">
-                <Input
-                  onBlur={handlePhone}
-                  onChangeText={text => setPhone(text)}
-                  ref={phoneInputRef}
-                  keyboardType="numeric"
-                  value={phone}
-                />
-                <ButtonInput>
-                  <InputIcon
-                    color={validPhone ? '#1ec5ea' : '#e0e0e0'}
-                    icon="check-circle-o"
-                    size={30}
-                  />
-                </ButtonInput>
-              </Div>
-            </Div>
-
-            <Div width="48%">
-              <InputTitle>Date of birth</InputTitle>
-              <InputDatePicker onDateChange={setBirthdate} date={birthdate} />
-            </Div>
-          </Div>
-
-          <Div direction="column" justify="flex-start">
-            <InputTitle>Gender</InputTitle>
-            <Div direction="row" justify="space-between">
-              <Gender
-                onPress={() => setGender('female')}
-                genderSelected={gender === 'female'}
-              >
-                <GenderImage gender="female" />
-                <GenderText genderSelected={gender === 'female'}>
-                  Female
-                </GenderText>
-              </Gender>
-              <Gender
-                onPress={() => setGender('male')}
-                genderSelected={gender === 'male'}
-              >
-                <GenderImage gender="male" />
-                <GenderText genderSelected={gender === 'male'}>Male</GenderText>
-              </Gender>
-            </Div>
-          </Div>
+      <KeyboardAvoidingView>
+        <Content>
+          <Block>
+            <H1>Document</H1>
+            <FormGroup>
+              <Label>BSN registered</Label>
+              <Input disabled value={profile.ssn} />
+            </FormGroup>
+          </Block>
 
           <Divisor />
 
-          <Div direction="column" marginBottom>
-            <ButtonNext state={buttonState} onPress={updateProfile}>
-              <ButtonNextText>SAVE CHANGES</ButtonNextText>
-            </ButtonNext>
-          </Div>
-        </BlockBody>
-      </Content>
+          <Block>
+            <H1>Profile</H1>
+
+            <Row>
+              <FormGroup>
+                <Label>Profile selfie</Label>
+                <Row>
+                  <TouchableWithoutFeedback
+                    onPress={() => handleImage('pictureProfile')}
+                  >
+                    <ProfileImage source={{ uri: pictureProfile }} />
+                  </TouchableWithoutFeedback>
+
+                  <FormGroup width="60%">
+                    <LabelImage>
+                      Use a selfie where your face can be seen clearly,
+                      preferably.
+                    </LabelImage>
+                  </FormGroup>
+                </Row>
+              </FormGroup>
+            </Row>
+
+            <Row>
+              <FormGroup>
+                <Label>Name</Label>
+                <Input value={profile.name} />
+              </FormGroup>
+            </Row>
+
+            <Row>
+              <FormGroup>
+                <Label>Lastname</Label>
+                <Input value={profile.lastname} />
+              </FormGroup>
+            </Row>
+
+            <Row>
+              <FormGroup>
+                <Label>E-mail registered</Label>
+                <Input disabled value={profile.user.email} />
+              </FormGroup>
+            </Row>
+
+            <Row>
+              <FormGroup width="48%">
+                <Label>Telephone</Label>
+                <Input value={profile.phone_number} />
+              </FormGroup>
+
+              <FormGroup width="48%">
+                <Label>Date of birth</Label>
+                <Input />
+              </FormGroup>
+            </Row>
+
+            <Row>
+              <ButtonSubmit disabled={loading} onPress={handleUpdate}>
+                {loading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <ButtonSubmitText>UPDAT PROFILE</ButtonSubmitText>
+                )}
+              </ButtonSubmit>
+            </Row>
+          </Block>
+        </Content>
+      </KeyboardAvoidingView>
     </Container>
   );
 }
