@@ -29,7 +29,7 @@ import {
 } from './styles';
 import api from '../../services/api';
 import { updateProvider } from '../../services/providers';
-import { Header } from '~/components';
+import { Header } from '../../components';
 
 export default function ServicesUpdate({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();

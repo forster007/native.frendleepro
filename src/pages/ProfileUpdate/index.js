@@ -1,17 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import {
-  ActivityIndicator,
-  Alert,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import Moment from 'moment';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Permissions from 'expo-permissions';
-import { updateProvider, updateProviderImages } from '../../services/providers';
 import api from '../../services/api';
+import { updateProvider, updateProviderImages } from '../../services/providers';
 import { Header } from '../../components';
 import {
   Block,
@@ -23,6 +18,8 @@ import {
   FormGroup,
   H1,
   Input,
+  InputDatePicker,
+  InputIcon,
   KeyboardAvoidingView,
   Label,
   LabelImage,
@@ -31,13 +28,27 @@ import {
 } from './styles';
 
 export default function ProfileUpdate({ navigation }) {
+  const nameInputRef = useRef();
+  const lastnameInputRef = useRef();
+  const phoneInputRef = useRef();
   const { showActionSheetWithOptions } = useActionSheet();
   const [loading, setLoading] = useState(false);
-  const [profile] = useState({ ...navigation.state.params.profile });
-  const [pictureProfile, setPictureProfile] = useState(profile.avatar.uri);
-  const { token } = useSelector(state => state.auth);
+  const [provider] = useState({ ...navigation.state.params.profile });
+  const [pictureProfile, setPictureProfile] = useState(provider.avatar.uri);
+  const [birthdate, setBirthdate] = useState(
+    Moment(provider.birthdate)
+      .utc()
+      .format('ll')
+  );
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [lastname, setLastname] = useState(provider.lastname);
+  const [name, setName] = useState(provider.name);
+  const [phone_number, setPhoneNumber] = useState(provider.phone_number);
+  const [validName, setValidName] = useState(true);
+  const [validLastname, setValidLastname] = useState(true);
+  const [validPhone, setValidPhone] = useState(true);
 
-  const handleAvatar = useCallback(async (option, result) => {
+  const handleAvatar = useCallback(async result => {
     const image = await ImageManipulator.manipulateAsync(result.uri, [], {
       compress: 0.5,
       format: ImageManipulator.SaveFormat.JPEG,
@@ -46,113 +57,140 @@ export default function ProfileUpdate({ navigation }) {
     setPictureProfile(image.uri);
   });
 
-  const handleImage = useCallback(option => {
-    const options = ['Take a picture', 'Find on galery', 'Cancel'];
-    const cancelButtonIndex = 2;
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-      },
-      async buttonIndex => {
-        let result;
-
-        switch (buttonIndex) {
-          case 0:
-            if (Constants.platform.ios) {
-              const perm = await Permissions.askAsync(
-                Permissions.CAMERA,
-                Permissions.CAMERA_ROLL
-              );
-
-              if (perm.status !== 'granted') {
-                Alert.alert(
-                  'Eita!',
-                  'Precisamos da permissão da câmera para você tirar uma foto'
-                );
-                break;
-              }
-            }
-
-            result = await ImagePicker.launchCameraAsync({
-              mediaTypes: 'Images',
-              aspect: [1, 1],
-              allowsEditing: true,
-              quality: 0.4,
-            });
-
-            if (result.cancelled) {
-              break;
-            }
-
-            handleAvatar(option, result);
-
-            break;
-          case 1:
-            if (Constants.platform.ios) {
-              const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-              if (perm.status !== 'granted') {
-                Alert.alert(
-                  'Eita!',
-                  'Precisamos da permissão da galeria para selecionar uma imagem'
-                );
-                break;
-              }
-            }
-
-            result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: 'Images',
-              aspect: [1, 1],
-              allowsEditing: true,
-              quality: 0.4,
-            });
-
-            if (result.cancelled) {
-              break;
-            }
-
-            handleAvatar(option, result);
-
-            break;
-          default:
-            break;
-        }
-      }
-    );
+  const handleDatePicker = useCallback(date => {
+    if (date)
+      setBirthdate(
+        Moment(date)
+          .utc()
+          .format('ll')
+      );
+    setDatePickerVisible(false);
   });
 
-  const handleUpdate = useCallback(async () => {
-    try {
-      setLoading(true);
+  const handleImage = useCallback(() => {
+    const options = ['Take a picture', 'Find on galery', 'Cancel'];
+    const cancelIndex = 2;
 
-      const formData = new FormData();
-      formData.append('picture_profile', pictureProfile);
+    showActionSheetWithOptions({ options, cancelIndex }, async i => {
+      switch (i) {
+        case 0: {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
-      console.log(formData);
+          if (status !== 'granted') {
+            Alert.alert('Warning!', 'Sorry - We need camera roll permissions to make this work');
+            break;
+          }
 
-      // const { data: provider } = await updateProvider('/providers', data);
+          const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0.5,
+          });
 
-      // await updateProviderImages(profile.id, formData);
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      await api.post(`/providers/${profile.id}/files`, formData);
+          if (!result.cancelled) handleAvatar(result);
+          break;
+        }
 
-      Alert.alert(
-        'SUCCESS',
-        'Profile updated!',
-        [{ text: 'Ok', onPress: () => navigation.goBack() }],
-        { cancelable: false }
-      );
-    } catch (error) {
-      console.log(error);
-      console.log(error.response);
+        case 1: {
+          const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+
+          if (status !== 'granted') {
+            Alert.alert('Warning!', 'Sorry - We need camera roll permissions to make this work');
+            break;
+          }
+
+          const result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0.4,
+          });
+
+          if (!result.cancelled) handleAvatar(result);
+          break;
+        }
+
+        default:
+          break;
+      }
+    });
+  });
+
+  const handleLastname = useCallback(async () => {
+    if (name && name.length >= 2) {
+      setValidLastname(true);
+    } else {
+      Alert.alert('WARNING', 'LASTNAME invalid');
+      setValidLastname(false);
     }
   });
 
-  useEffect(() => {
-    console.log(profile);
-  }, [profile]);
+  const handleName = useCallback(async () => {
+    if (name && name.length >= 2) {
+      setValidName(true);
+    } else {
+      Alert.alert('WARNING', 'NAME invalid');
+      setValidName(false);
+    }
+  });
+
+  const handlePhone = useCallback(async () => {
+    if (phone === provider.phone_number) {
+      setValidPhone(true);
+    } else if (phone && phone.length >= 6) {
+      const { data } = await api.get(`/checks?field=phone_number&value=${phone}`);
+      setValidPhone(data.available);
+
+      if (data.available === false) {
+        Alert.alert('WARNING', 'PHONE already in use');
+      }
+    } else if (phone && phone.length < 6) {
+      Alert.alert('WARNING', 'PHONE invalid');
+      setValidPhone(false);
+    } else {
+      setValidPhone(false);
+    }
+  });
+
+  const handleUpdate = useCallback(async () => {
+    setLoading(true);
+
+    if (
+      !Moment(birthdate).isSame(provider.birthdate) ||
+      lastname !== provider.lastname ||
+      name !== provider.name ||
+      phone_number !== provider.phone_number ||
+      pictureProfile !== provider.avatar.uri
+    ) {
+      if (validName && validLastname && validPhone) {
+        await updateProvider({ birthdate, name, lastname, phone_number });
+      }
+
+      if (provider.avatar.uri !== pictureProfile) {
+        const formData = new FormData();
+
+        formData.append('picture_profile', {
+          uri: pictureProfile,
+          name: pictureProfile.split('/').pop(),
+          type: 'image/jpg',
+        });
+
+        await updateProviderImages(provider.id, formData);
+      }
+
+      Alert.alert('SUCCESS', 'Profile updated!', [{ text: 'Ok', onPress: () => navigation.goBack() }], {
+        cancelable: false,
+      });
+    } else {
+      Alert.alert(
+        'WARNING',
+        'Nothing has change. Profile not updated!',
+        [{ text: 'Ok', onPress: () => setLoading(false) }],
+        { cancelable: false }
+      );
+    }
+  });
 
   return (
     <Container>
@@ -164,7 +202,7 @@ export default function ProfileUpdate({ navigation }) {
             <H1>Document</H1>
             <FormGroup>
               <Label>BSN registered</Label>
-              <Input disabled value={profile.ssn} />
+              <Input disabled value={provider.ssn} />
             </FormGroup>
           </Block>
 
@@ -177,17 +215,12 @@ export default function ProfileUpdate({ navigation }) {
               <FormGroup>
                 <Label>Profile selfie</Label>
                 <Row>
-                  <TouchableWithoutFeedback
-                    onPress={() => handleImage('pictureProfile')}
-                  >
+                  <TouchableWithoutFeedback onPress={handleImage}>
                     <ProfileImage source={{ uri: pictureProfile }} />
                   </TouchableWithoutFeedback>
 
                   <FormGroup width="60%">
-                    <LabelImage>
-                      Use a selfie where your face can be seen clearly,
-                      preferably.
-                    </LabelImage>
+                    <LabelImage>Use a selfie where your face can be seen clearly, preferably.</LabelImage>
                   </FormGroup>
                 </Row>
               </FormGroup>
@@ -196,43 +229,77 @@ export default function ProfileUpdate({ navigation }) {
             <Row>
               <FormGroup>
                 <Label>Name</Label>
-                <Input value={profile.name} />
+                <Input
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  onBlur={handleName}
+                  onChangeText={setName}
+                  onSubmitEditing={() => lastnameInputRef.current.focus()}
+                  ref={nameInputRef}
+                  returnKeyType="next"
+                  value={name}
+                />
+                <InputIcon icon="check-circle-o" size={30} valid={validName} />
               </FormGroup>
             </Row>
 
             <Row>
               <FormGroup>
                 <Label>Lastname</Label>
-                <Input value={profile.lastname} />
+                <Input
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  onBlur={handleLastname}
+                  onChangeText={setLastname}
+                  onSubmitEditing={() => phoneInputRef.current.focus()}
+                  ref={lastnameInputRef}
+                  returnKeyType="next"
+                  value={lastname}
+                />
+                <InputIcon icon="check-circle-o" size={30} valid={validLastname} />
               </FormGroup>
             </Row>
 
             <Row>
               <FormGroup>
                 <Label>E-mail registered</Label>
-                <Input disabled value={profile.user.email} />
+                <Input disabled value={provider.user.email} />
               </FormGroup>
             </Row>
 
             <Row>
               <FormGroup width="48%">
                 <Label>Telephone</Label>
-                <Input value={profile.phone_number} />
+                <Input
+                  onBlur={handlePhone}
+                  onChangeText={e => setPhoneNumber(e)}
+                  ref={phoneInputRef}
+                  keyboardType="numeric"
+                  value={phone_number}
+                />
+                <InputIcon icon="check-circle-o" size={30} valid={validPhone} />
               </FormGroup>
 
               <FormGroup width="48%">
                 <Label>Date of birth</Label>
-                <Input />
+                <TouchableOpacity activeOpacity={1} onPress={() => setDatePickerVisible(true)}>
+                  <View pointerEvents="none">
+                    <Input colored disabled value={birthdate} />
+                  </View>
+                  <InputIcon icon="calendar" size={24} style={{ right: 12, top: 12 }} valid />
+                </TouchableOpacity>
+
+                <InputDatePicker
+                  isVisible={isDatePickerVisible}
+                  onCancel={handleDatePicker}
+                  onConfirm={handleDatePicker}
+                />
               </FormGroup>
             </Row>
 
             <Row>
               <ButtonSubmit disabled={loading} onPress={handleUpdate}>
-                {loading ? (
-                  <ActivityIndicator />
-                ) : (
-                  <ButtonSubmitText>UPDAT PROFILE</ButtonSubmitText>
-                )}
+                {loading ? <ActivityIndicator /> : <ButtonSubmitText>UPDATE PROFILE</ButtonSubmitText>}
               </ButtonSubmit>
             </Row>
           </Block>
