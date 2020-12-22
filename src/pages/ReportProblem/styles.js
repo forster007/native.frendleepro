@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 const screenWidth = Math.round(Dimensions.get('window').width);
 const { height } = Dimensions.get('window');
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   padding-top: ${Platform.OS === 'ios' && height >= 812
     ? '50px'
@@ -31,11 +31,11 @@ export const DescriptionText = styled.Text`
   text-align: left;
   font-size: 16px;
   line-height: 20px;
-  padding-bottom: 20px;
+  padding: 20px 0;
 `;
 
 export const ProblemDiv = styled.View`
-  margin-top: 25px;
+  margin-bottom: 25px;
   width: 100%;
 `;
 
@@ -111,5 +111,5 @@ export const ButtonDiv = styled.View`
   flex-direction: row;
   justify-content: space-between;
   height: 50px;
-  margin-top: 20px;
+  margin-bottom: 20px;
 `;

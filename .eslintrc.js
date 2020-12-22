@@ -36,6 +36,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'off',
     'react-native/no-raw-text': 'off',
+    ''
   },
   settings: {
     'import/resolver': {

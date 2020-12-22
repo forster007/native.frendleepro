@@ -375,10 +375,6 @@ export const ProfileCardStuffText = styled.Text`
   margin: 0 15px;
 `;
 
-export const ProfileStuffsFlatList = styled.FlatList`
-  padding-bottom: 15px;
-`;
-
 export const ButtonEdit = styled(TouchableOpacity)`
   flex: 1;
   align-items: center;
@@ -414,11 +410,16 @@ export const ButtonEditServiceText = styled.Text`
   font-size: 20px;
   font-weight: bold;
 `;
-export const ButtonEditDiv = styled.View`
+export const ButtonEditDiv = styled.SafeAreaView`
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
   height: 50px;
   margin-bottom: 10px;
   width: 100%;
+`;
+
+export const AvailabilityActivitiesView = styled.SafeAreaView`
+  flex: 1;
+  margin-bottom: 20px;
 `;

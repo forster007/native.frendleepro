@@ -80,6 +80,9 @@ export default function SignUpStep1({ navigation }) {
   const handleAddress = useCallback(async () => {
     if (postalCode && number) {
       try {
+        console.log('data ');
+        const response = await getAddress(postalCode, number);
+        console.log(`data:${postalCode} ${number} ${JSON.stringify(response)}`);
         const { data } = await getAddress(postalCode, number);
 
         setCity(data.city);
