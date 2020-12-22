@@ -1,8 +1,4 @@
-import {
-  FontAwesome,
-  FontAwesome5,
-  MaterialCommunityIcons,
-} from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 import { Dimensions } from 'react-native';
@@ -18,15 +14,17 @@ export const Content = styled.ScrollView.attrs({
   keyboardShouldPersistTaps: 'always',
   nestedScrollEnabled: true,
   showsVerticalScrollIndicator: false,
+  contentInsetAdjustmentBehavior: 'automatic',
 })`
-  background-color: #ffffff;
+  background-color: #dcd9e3;
   border-bottom-color: #f2f2f2;
   border-bottom-width: 1px;
 `;
 
-export const Div = styled.View`
-  padding-horizontal: 10px;
+export const Div = styled.SafeAreaView`
   background: #dcd9e3;
+  flex: 1;
+  margin: 0 10px;
 `;
 
 export const DivisorInfo = styled.View`
@@ -40,14 +38,14 @@ export const DivisorInfo = styled.View`
 export const ProfileAvatar = styled.ImageBackground.attrs({
   resizeMode: 'cover',
 })`
-  height: 240px
+  height: 240px;
   justify-content: flex-end;
   overflow: hidden;
   width: 100%;
 `;
 
 export const ProfileName = styled.View`
-  padding-vertical: 10px;
+  padding: 10px 0;
   width: 100%;
 `;
 
@@ -169,29 +167,25 @@ export const ProfileHalfCardInfo = styled.View`
   width: 48%;
 `;
 
-export const ProfileCardInfoGenderIcon = styled(FontAwesome5).attrs(
-  ({ gender }) => {
-    return {
-      color: '#4C476F',
-      name: gender === 'female' ? 'female' : 'male',
-      size: 26,
-    };
-  }
-)`
+export const ProfileCardInfoGenderIcon = styled(FontAwesome5).attrs(({ gender }) => {
+  return {
+    color: '#4C476F',
+    name: gender === 'female' ? 'female' : 'male',
+    size: 26,
+  };
+})`
   text-align: center;
   margin: 0 15px;
   width: 30px;
 `;
 
-export const ProfileCardInfoSmokerIcon = styled(FontAwesome5).attrs(
-  ({ smoker }) => {
-    return {
-      color: `rgba(76, 71, 111, ${smoker ? '1' : '0.2'})`,
-      name: 'smoking',
-      size: 20,
-    };
-  }
-)`
+export const ProfileCardInfoSmokerIcon = styled(FontAwesome5).attrs(({ smoker }) => {
+  return {
+    color: `rgba(76, 71, 111, ${smoker ? '1' : '0.2'})`,
+    name: 'smoking',
+    size: 20,
+  };
+})`
   text-align: center;
   margin: 0 15px;
   width: 30px;
@@ -239,9 +233,7 @@ export const ProfileCardRatingTextDown = styled(ProfileCardRatingText)`
   font-size: 14px;
 `;
 
-export const ProfileCardInfoPetFrendlyIcon = styled(
-  MaterialCommunityIcons
-).attrs(({ petFriendly }) => {
+export const ProfileCardInfoPetFrendlyIcon = styled(MaterialCommunityIcons).attrs(({ petFriendly }) => {
   return {
     color: `rgba(76, 71, 111, ${petFriendly ? '1' : '0.2'})`,
     name: 'dog',
@@ -273,9 +265,7 @@ export const ProfileCardInfoInstagramIcon = styled(FontAwesome).attrs({
   width: 30px;
 `;
 
-export const ProfileCardInfoCertificationIcon = styled(
-  MaterialCommunityIcons
-).attrs({
+export const ProfileCardInfoCertificationIcon = styled(MaterialCommunityIcons).attrs({
   color: '#1EC5EA',
   name: 'certificate',
   size: 30,

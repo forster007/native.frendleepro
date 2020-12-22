@@ -25,14 +25,13 @@ export default function About() {
         <FrendleeLogo />
 
         <ContentText>
-          Live-edge shabby chic portland 3 wolf moon squid meggings tumeric hell
-          of put a bird on it bespoke jianbing mlkshk chillwave tote bag
-          cold-pressed.
+          Live-edge shabby chic portland 3 wolf moon squid meggings tumeric hell of put a bird on it bespoke jianbing
+          mlkshk chillwave tote bag cold-pressed.
         </ContentText>
 
         <ContentText>
-          Ennui raw denim austin thundercats pug venmo. Raw denim before they
-          sold out truffaut man braid stumptown tumblr next level slow-carb.
+          Ennui raw denim austin thundercats pug venmo. Raw denim before they sold out truffaut man braid stumptown
+          tumblr next level slow-carb.
         </ContentText>
 
         <ContentSocialIcons>
@@ -45,15 +44,12 @@ export default function About() {
 
         <ContentText>
           Want more information? {`\n`}
-          See here our <ContentTextColored>
-            Terms of Service
-          </ContentTextColored>{' '}
-          (TOS)
+          See here our <ContentTextColored>Terms of Service</ContentTextColored> (TOS)
         </ContentText>
       </Content>
       <Footer>
         <FooterVersionText>
-          VERSION {Constants.manifest.version}
+          VERSION {Constants.manifest.version} - BUILD {Constants.nativeBuildVersion}
         </FooterVersionText>
       </Footer>
     </Container>

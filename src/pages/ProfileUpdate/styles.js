@@ -28,9 +28,15 @@ export const Container = styled.View`
   flex: 1;
 `;
 
-export const Content = styled.ScrollView`
+export const Content = styled.ScrollView.attrs({
+  contentInsetAdjustmentBehavior: 'automatic',
+  contentContainerStyle: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingBottom: 0,
+  },
+})`
   flex: 1;
-  padding: 20px 20px 0 20px;
 `;
 
 export const Divisor = styled.View`

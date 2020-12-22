@@ -2,9 +2,10 @@
   "expo": {
     "android": {
       "package": "com.frendleepro",
-      "versionCode": 10
+      "versionCode": 1
     },
     "ios": {
+      "buildNumber": "2",
       "bundleIdentifier": "com.frendleepro",
       "supportsTablet": false
     },
