@@ -187,8 +187,8 @@ export default function SignUpStep2({ navigation }) {
 
       data.formation = ocupation;
       data.is_medical_provider = checked;
-      data.provider_clocks = clocksCheckeds;
-      data.provider_periods = periodsCheckeds;
+      data.provider_clocks = [clocksCheckeds];
+      data.provider_periods = [periodsCheckeds];
       data.provider_services = servicesCheckeds;
       data.provider_stuffs = stuffsCheckeds;
 

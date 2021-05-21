@@ -6,11 +6,15 @@ import { messagesSuccess } from './actions';
 import types from './types';
 
 export function* messagesRequest() {
-  try {
-    const { data } = yield call(getMessages);
-    yield put(messagesSuccess(data.messages));
-  } catch (error) {
-    console.log('--> messagesRequest: ', error);
+  const authState = yield select(state => state.auth);
+  if (authState.signed) {
+    try {
+      const { data } = yield call(getMessages);
+
+      yield put(messagesSuccess(data.messages));
+    } catch (error) {
+      console.log('Socket messages request: ', error);
+    }
   }
 }
 
@@ -22,7 +26,7 @@ export function* AsyncFirebaseMessagesRequest() {
   });
 
   while (true) {
-    const snapshot = yield take(channel);
+    yield take(channel);
     yield call(messagesRequest);
   }
 }

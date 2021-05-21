@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Alert, StatusBar, View } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { useDispatch } from 'react-redux';
@@ -8,6 +9,7 @@ import moment from 'moment';
 import { Header, Modal } from '../../components';
 import { getAppointments } from '../../services/appointments';
 import { storeOnesignal } from '../../services/onesignal';
+import { connect, disconnect } from '../../services/websocket';
 import { messagesRequest } from '../../store/modules/websocket/actions';
 import {
   ActionButton,
@@ -53,6 +55,12 @@ function Schedule({ isFocused, navigation }) {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState(new Map());
+  const authState = useSelector(state => state.auth);
+
+  const handleAppState = useCallback(nextAppState => {
+    if (nextAppState === 'active') connect(authState.user);
+    if (nextAppState === 'background') disconnect();
+  });
 
   const handleAppointments = useCallback(async () => {
     setFirstLoad(false);
@@ -104,9 +112,7 @@ function Schedule({ isFocused, navigation }) {
   });
 
   const handleNotifications = useCallback(async () => {
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
 
     let finalStatus = existingStatus;
 
@@ -135,6 +141,12 @@ function Schedule({ isFocused, navigation }) {
   useEffect(() => {
     handleAppointments();
     handleNotifications();
+
+    AppState.addEventListener('change', handleAppState);
+
+    return () => {
+      AppState.removeEventListener('change', handleAppState);
+    };
   }, []);
 
   useEffect(() => {
@@ -157,14 +169,10 @@ function Schedule({ isFocused, navigation }) {
       case 'payed': {
         return (
           <CardActionFooter>
-            <ActionButton
-              onPress={() => navigation.navigate('Chat', { appointment })}
-            >
+            <ActionButton onPress={() => navigation.navigate('Chat', { appointment })}>
               <ActionButtonText>Message</ActionButtonText>
             </ActionButton>
-            <ActionButton
-              onPress={() => handleFooterAction('cancel', appointment)}
-            >
+            <ActionButton onPress={() => handleFooterAction('cancel', appointment)}>
               <ActionButtonText>Cancel</ActionButtonText>
             </ActionButton>
           </CardActionFooter>
@@ -175,11 +183,7 @@ function Schedule({ isFocused, navigation }) {
         if (appointment.provider_rating === false) {
           return (
             <CardActionFooter>
-              <ActionButton
-                onPress={() =>
-                  navigation.navigate('ScheduleDetail', { appointment })
-                }
-              >
+              <ActionButton onPress={() => navigation.navigate('ScheduleDetail', { appointment })}>
                 <ActionButtonText>Rate treatment</ActionButtonText>
               </ActionButton>
             </CardActionFooter>
@@ -192,11 +196,7 @@ function Schedule({ isFocused, navigation }) {
       case 'started': {
         return (
           <CardActionFooter>
-            <ActionButton
-              onPress={() =>
-                navigation.navigate('ScheduleDetail', { appointment })
-              }
-            >
+            <ActionButton onPress={() => navigation.navigate('ScheduleDetail', { appointment })}>
               <ActionButtonText>Treatment detail</ActionButtonText>
             </ActionButton>
           </CardActionFooter>
